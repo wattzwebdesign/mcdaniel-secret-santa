@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - My Wish List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="title christmas-title">My Wish List 🎁</h1>
+                <p class="subtitle">Add items to help your Secret Santa</p>
+            </div>
+
+            <div class="card-body">
+                <!-- Add Item Form -->
+                <div class="wish-list-form">
+                    <h3>Add New Item</h3>
+                    <form id="addItemForm">
+                        <div class="form-group">
+                            <label for="itemName">Item Name *</label>
+                            <input type="text" id="itemName" required placeholder="e.g., Cozy Blanket">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description">Description</label>
+                            <textarea id="description" rows="3" placeholder="Add details about the item..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="link">Link (optional)</label>
+                            <input type="url" id="link" placeholder="https://example.com/product">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="priceRange">Price Range</label>
+                                <input type="text" id="priceRange" placeholder="$20-30">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="priority">Priority</label>
+                                <select id="priority">
+                                    <option value="1">⭐ Must Have</option>
+                                    <option value="2" selected>⭐⭐ Would Like</option>
+                                    <option value="3">⭐⭐⭐ If Budget Allows</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="formError" class="error-message" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-primary">
+                            Add to Wish List ➕
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Wish List Items -->
+                <div class="wish-list-items">
+                    <h3>Your Wish List</h3>
+                    <div id="loadingItems" class="loading-state">
+                        <div class="spinner">🎄</div>
+                        <p>Loading your wish list...</p>
+                    </div>
+
+                    <div id="emptyState" style="display: none;" class="empty-state">
+                        <p>📝 Your wish list is empty. Add some items above!</p>
+                    </div>
+
+                    <div id="itemsList" class="items-grid"></div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <a href="/assignment.html" class="btn btn-secondary">← Back to Assignment</a>
+                <button id="logoutBtn" class="btn btn-text">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div id="editModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Item</h2>
+                <button class="modal-close" id="closeModal">×</button>
+            </div>
+            <form id="editItemForm">
+                <input type="hidden" id="editItemId">
+                <div class="form-group">
+                    <label for="editItemName">Item Name *</label>
+                    <input type="text" id="editItemName" required>
+                </div>
+                <div class="form-group">
+                    <label for="editDescription">Description</label>
+                    <textarea id="editDescription" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editLink">Link</label>
+                    <input type="url" id="editLink">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editPriceRange">Price Range</label>
+                        <input type="text" id="editPriceRange">
+                    </div>
+                    <div class="form-group">
+                        <label for="editPriority">Priority</label>
+                        <select id="editPriority">
+                            <option value="1">⭐ Must Have</option>
+                            <option value="2">⭐⭐ Would Like</option>
+                            <option value="3">⭐⭐⭐ If Budget Allows</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="editFormError" class="error-message" style="display: none;"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/wishlist.js"></script>
+</body>
+</html>

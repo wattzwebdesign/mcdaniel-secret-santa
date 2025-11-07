@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Notification Preferences</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="title christmas-title">⚙️ Notification Settings ⚙️</h1>
+                <p class="subtitle">Manage your SMS preferences</p>
+            </div>
+            <div class="card-body">
+                <div id="loadingPrefs" class="loading-state">
+                    <div class="spinner">🎄</div>
+                    <p>Loading preferences...</p>
+                </div>
+                <form id="preferencesForm" style="display: none;">
+                    <div class="preference-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="smsEnabled" class="toggle-checkbox">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Enable SMS Notifications</span>
+                        </label>
+                    </div>
+                    <div id="notificationTypes" style="display: none;">
+                        <div class="preference-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="notifyOnGameStart" class="toggle-checkbox">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Game Start Announcements</span>
+                            </label>
+                        </div>
+                        <div class="preference-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="notifyOnAssignment" class="toggle-checkbox">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Assignment Notifications</span>
+                            </label>
+                        </div>
+                        <div class="preference-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="notifyOnWishlistUpdate" class="toggle-checkbox">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Wish List Updates</span>
+                            </label>
+                        </div>
+                        <div class="preference-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="notifyReminders" class="toggle-checkbox">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Shopping Reminders</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div id="formSuccess" class="success-message" style="display: none;">Preferences saved!</div>
+                    <div id="formError" class="error-message" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary">Save Preferences</button>
+                    <button type="button" id="testSmsBtn" class="btn btn-secondary">Send Test SMS 📱</button>
+                </form>
+            </div>
+            <div class="card-footer">
+                <a href="/assignment.html" class="btn btn-secondary">← Back</a>
+                <button id="logoutBtn" class="btn btn-text">Logout</button>
+            </div>
+        </div>
+    </div>
+    <script src="/js/main.js"></script>
+    <script src="/js/preferences.js"></script>
+</body>
+</html>

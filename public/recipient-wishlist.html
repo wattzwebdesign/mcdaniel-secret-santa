@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Recipient's Wish List</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="title christmas-title">🎁 Their Wish List 🎁</h1>
+                <p class="subtitle">Shopping for <span id="recipientName"></span></p>
+            </div>
+            <div class="card-body">
+                <div id="loadingItems" class="loading-state">
+                    <div class="spinner">🎄</div>
+                    <p>Loading wish list...</p>
+                </div>
+                <div id="emptyState" style="display: none;" class="empty-state">
+                    <p>📝 They haven't added any items yet. Check back soon!</p>
+                </div>
+                <div id="itemsList" class="items-grid"></div>
+            </div>
+            <div class="card-footer">
+                <a href="/assignment.html" class="btn btn-secondary">← Back</a>
+                <button id="logoutBtn" class="btn btn-text">Logout</button>
+            </div>
+        </div>
+    </div>
+    <script src="/js/main.js"></script>
+    <script>
+        // Recipient wishlist functionality
+        let currentItems = [];
+
+        async function loadRecipientWishlist() {
+            try {
+                showElement('loadingItems');
+                hideElement('emptyState');
+                hideElement('itemsList');
+
+                const response = await api('/api/wishlist/recipient-items');
+                const data = await response.json();
+
+                hideElement('loadingItems');
+
+                if (!data.success) {
+                    if (data.message.includes('must draw')) {
+                        window.location.href = '/assignment.html';
+                    }
+                    throw new Error(data.message);
+                }
+
+                currentItems = data.items || [];
+
+                if (currentItems.length === 0) {
+                    showElement('emptyState');
+                } else {
+                    renderItems(currentItems);
+                    showElement('itemsList');
+                }
+            } catch (error) {
+                hideElement('loadingItems');
+                showError('Failed to load wish list: ' + error.message);
+            }
+        }
+
+        function renderItems(items) {
+            const container = document.getElementById('itemsList');
+            container.innerHTML = items.map(item => `
+                <div class="wish-item ${item.is_purchased ? 'purchased' : ''}" data-id="${item.id}">
+                    <div class="wish-item-header">
+                        <h3>${escapeHtml(item.item_name)}</h3>
+                        <span class="priority-badge priority-${item.priority}">${getPriorityLabel(item.priority)}</span>
+                    </div>
+                    ${item.description ? `<p class="wish-item-description">${escapeHtml(item.description)}</p>` : ''}
+                    <div class="wish-item-footer">
+                        ${item.price_range ? `<span class="price-tag">💰 ${escapeHtml(item.price_range)}</span>` : ''}
+                        ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="btn btn-sm btn-secondary">View Item 🔗</a>` : ''}
+                        <button class="btn btn-sm ${item.is_purchased ? 'btn-success' : 'btn-primary'}" onclick="togglePurchased(${item.id}, ${item.is_purchased})">
+                            ${item.is_purchased ? '✅ Purchased' : 'Mark as Purchased'}
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function togglePurchased(itemId, currentStatus) {
+            try {
+                const response = await api(`/api/wishlist/mark-purchased/${itemId}`, {
+                    method: 'PATCH'
+                });
+                const data = await response.json();
+                if (data.success) {
+                    await loadRecipientWishlist();
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                showError('Failed to update item: ' + error.message);
+            }
+        }
+
+        function getPriorityLabel(priority) {
+            const labels = {1: '⭐ Must Have', 2: '⭐⭐ Would Like', 3: '⭐⭐⭐ Budget Allows'};
+            return labels[priority] || '';
+        }
+
+        // Initialize
+        checkAuth().then(loadRecipientWishlist);
+        document.getElementById('logoutBtn').addEventListener('click', logout);
+    </script>
+</body>
+</html>

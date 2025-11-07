@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+
+    <div class="container">
+        <div class="login-card">
+            <div class="santa-hat">🎅</div>
+            <h1 class="title christmas-title">Secret Santa</h1>
+            <p class="subtitle">Enter your details to begin</p>
+
+            <form id="loginForm" class="form">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        required
+                        placeholder="Enter your first name"
+                        autocomplete="given-name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number</label>
+                    <input
+                        type="tel"
+                        id="phoneNumber"
+                        name="phoneNumber"
+                        required
+                        placeholder="(123) 456-7890"
+                        autocomplete="tel"
+                    >
+                    <small>Enter the last 4 digits of your phone number</small>
+                </div>
+
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
+                    <span class="btn-text">Enter</span>
+                    <span class="btn-loader" style="display: none;">🎄</span>
+                </button>
+            </form>
+
+            <div class="admin-link">
+                <a href="/admin.html">Admin Setup</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/login.js"></script>
+</body>
+</html>

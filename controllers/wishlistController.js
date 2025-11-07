@@ -1,0 +1,347 @@
+const db = require('../config/database');
+const notificationService = require('../services/notificationService');
+
+// Get my wish list items
+async function getMyItems(req, res) {
+    try {
+        const participantId = req.session.participantId;
+
+        const sql = `
+            SELECT
+                id,
+                item_name,
+                description,
+                link,
+                price_range,
+                priority,
+                display_order,
+                created_at,
+                updated_at
+            FROM wish_list_items
+            WHERE participant_id = ?
+            ORDER BY display_order ASC, priority ASC, created_at ASC
+        `;
+
+        const items = await db.query(sql, [participantId]);
+
+        res.json({
+            success: true,
+            items
+        });
+    } catch (error) {
+        console.error('Get my items error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching your wish list'
+        });
+    }
+}
+
+// Add wish list item
+async function addItem(req, res) {
+    try {
+        const participantId = req.session.participantId;
+        const { itemName, description, link, priceRange, priority } = req.body;
+
+        const sql = `
+            INSERT INTO wish_list_items
+            (participant_id, item_name, description, link, price_range, priority)
+            VALUES (?, ?, ?, ?, ?, ?)
+        `;
+
+        const result = await db.query(sql, [
+            participantId,
+            itemName,
+            description || null,
+            link || null,
+            priceRange || null,
+            priority || 2
+        ]);
+
+        // Notify Santa asynchronously
+        notificationService.notifyWishListUpdate(participantId)
+            .catch(err => console.error('Error notifying Santa:', err));
+
+        res.json({
+            success: true,
+            itemId: result.insertId,
+            message: 'Item added successfully'
+        });
+    } catch (error) {
+        console.error('Add item error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while adding the item'
+        });
+    }
+}
+
+// Update wish list item
+async function updateItem(req, res) {
+    try {
+        const participantId = req.session.participantId;
+        const itemId = parseInt(req.params.id);
+        const { itemName, description, link, priceRange, priority } = req.body;
+
+        // Check ownership
+        const checkSql = `SELECT participant_id FROM wish_list_items WHERE id = ?`;
+        const [item] = await db.query(checkSql, [itemId]);
+
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: 'Item not found'
+            });
+        }
+
+        if (item.participant_id !== participantId) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only edit your own wish list items'
+            });
+        }
+
+        const sql = `
+            UPDATE wish_list_items
+            SET item_name = ?,
+                description = ?,
+                link = ?,
+                price_range = ?,
+                priority = ?
+            WHERE id = ?
+        `;
+
+        await db.query(sql, [
+            itemName,
+            description || null,
+            link || null,
+            priceRange || null,
+            priority || 2,
+            itemId
+        ]);
+
+        // Notify Santa asynchronously
+        notificationService.notifyWishListUpdate(participantId)
+            .catch(err => console.error('Error notifying Santa:', err));
+
+        res.json({
+            success: true,
+            message: 'Item updated successfully'
+        });
+    } catch (error) {
+        console.error('Update item error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating the item'
+        });
+    }
+}
+
+// Delete wish list item
+async function deleteItem(req, res) {
+    try {
+        const participantId = req.session.participantId;
+        const itemId = parseInt(req.params.id);
+
+        // Check ownership
+        const checkSql = `SELECT participant_id FROM wish_list_items WHERE id = ?`;
+        const [item] = await db.query(checkSql, [itemId]);
+
+        if (!item) {
+            return res.status(404).json({
+                success: false,
+                message: 'Item not found'
+            });
+        }
+
+        if (item.participant_id !== participantId) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only delete your own wish list items'
+            });
+        }
+
+        const sql = `DELETE FROM wish_list_items WHERE id = ?`;
+        await db.query(sql, [itemId]);
+
+        res.json({
+            success: true,
+            message: 'Item deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete item error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while deleting the item'
+        });
+    }
+}
+
+// Reorder wish list items
+async function reorderItems(req, res) {
+    try {
+        const participantId = req.session.participantId;
+        const { itemIds } = req.body; // Array of item IDs in new order
+
+        if (!Array.isArray(itemIds) || itemIds.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid item order'
+            });
+        }
+
+        // Update display order for each item
+        for (let i = 0; i < itemIds.length; i++) {
+            await db.query(
+                `UPDATE wish_list_items
+                 SET display_order = ?
+                 WHERE id = ? AND participant_id = ?`,
+                [i, itemIds[i], participantId]
+            );
+        }
+
+        res.json({
+            success: true,
+            message: 'Items reordered successfully'
+        });
+    } catch (error) {
+        console.error('Reorder items error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while reordering items'
+        });
+    }
+}
+
+// Get recipient's wish list (for Santa)
+async function getRecipientItems(req, res) {
+    try {
+        const participantId = req.session.participantId;
+
+        // Get assigned recipient
+        const assignSql = `
+            SELECT assigned_to_id
+            FROM participants
+            WHERE id = ? AND has_picked = TRUE
+        `;
+
+        const [participant] = await db.query(assignSql, [participantId]);
+
+        if (!participant || !participant.assigned_to_id) {
+            return res.status(403).json({
+                success: false,
+                message: 'You must draw your Secret Santa first'
+            });
+        }
+
+        const recipientId = participant.assigned_to_id;
+
+        // Get recipient's wish list
+        const sql = `
+            SELECT
+                w.id,
+                w.item_name,
+                w.description,
+                w.link,
+                w.price_range,
+                w.priority,
+                w.display_order,
+                CASE WHEN wp.id IS NOT NULL THEN TRUE ELSE FALSE END as is_purchased
+            FROM wish_list_items w
+            LEFT JOIN wish_list_purchases wp ON w.id = wp.wish_list_item_id
+                AND wp.santa_participant_id = ?
+            WHERE w.participant_id = ?
+            ORDER BY w.display_order ASC, w.priority ASC, w.created_at ASC
+        `;
+
+        const items = await db.query(sql, [participantId, recipientId]);
+
+        res.json({
+            success: true,
+            items
+        });
+    } catch (error) {
+        console.error('Get recipient items error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching the wish list'
+        });
+    }
+}
+
+// Mark item as purchased
+async function markPurchased(req, res) {
+    try {
+        const participantId = req.session.participantId;
+        const itemId = parseInt(req.params.id);
+
+        // Verify the item belongs to their assigned recipient
+        const verifySql = `
+            SELECT w.participant_id
+            FROM wish_list_items w
+            JOIN participants p ON p.assigned_to_id = w.participant_id
+            WHERE w.id = ? AND p.id = ? AND p.has_picked = TRUE
+        `;
+
+        const [verification] = await db.query(verifySql, [itemId, participantId]);
+
+        if (!verification) {
+            return res.status(403).json({
+                success: false,
+                message: 'You can only mark items from your recipient\'s wish list'
+            });
+        }
+
+        // Check if already marked
+        const checkSql = `
+            SELECT id FROM wish_list_purchases
+            WHERE wish_list_item_id = ? AND santa_participant_id = ?
+        `;
+
+        const [existing] = await db.query(checkSql, [itemId, participantId]);
+
+        if (existing) {
+            // Unmark (toggle)
+            await db.query(
+                `DELETE FROM wish_list_purchases WHERE id = ?`,
+                [existing.id]
+            );
+
+            return res.json({
+                success: true,
+                isPurchased: false,
+                message: 'Item unmarked as purchased'
+            });
+        } else {
+            // Mark as purchased
+            await db.query(
+                `INSERT INTO wish_list_purchases
+                 (wish_list_item_id, santa_participant_id)
+                 VALUES (?, ?)`,
+                [itemId, participantId]
+            );
+
+            return res.json({
+                success: true,
+                isPurchased: true,
+                message: 'Item marked as purchased'
+            });
+        }
+    } catch (error) {
+        console.error('Mark purchased error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while marking the item'
+        });
+    }
+}
+
+module.exports = {
+    getMyItems,
+    addItem,
+    updateItem,
+    deleteItem,
+    reorderItems,
+    getRecipientItems,
+    markPurchased
+};

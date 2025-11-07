@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Your Assignment</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <h1 class="title christmas-title">🎅 Secret Santa 🎅</h1>
+                <p class="subtitle">Welcome, <span id="userName"></span>!</p>
+            </div>
+
+            <div class="card-body">
+                <!-- Loading State -->
+                <div id="loadingState" class="loading-state">
+                    <div class="spinner">🎄</div>
+                    <p>Loading your assignment...</p>
+                </div>
+
+                <!-- Not Picked Yet -->
+                <div id="notPickedState" class="text-center" style="display: none;">
+                    <div class="present-box">🎁</div>
+                    <h2>Ready to draw your Secret Santa?</h2>
+                    <p>Click the button below to find out who you're shopping for!</p>
+                    <button id="drawBtn" class="btn btn-primary btn-lg">
+                        Draw Your Secret Santa 🎲
+                    </button>
+                </div>
+
+                <!-- Assignment Revealed -->
+                <div id="assignmentState" class="text-center" style="display: none;">
+                    <div class="reveal-animation">
+                        <div class="gift-icon">🎁</div>
+                        <h2>You're shopping for...</h2>
+                        <div class="recipient-name" id="recipientName"></div>
+                        <p class="secret-reminder">🤫 Keep it secret! 🤫</p>
+                    </div>
+
+                    <div class="navigation-buttons">
+                        <a href="/recipient-wishlist.html" class="btn btn-primary">
+                            View Their Wish List 📝
+                        </a>
+                        <a href="/wishlist.html" class="btn btn-secondary">
+                            Edit My Wish List ✏️
+                        </a>
+                        <a href="/preferences.html" class="btn btn-secondary">
+                            Notification Settings ⚙️
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Error State -->
+                <div id="errorState" class="error-message" style="display: none;">
+                    <p id="errorMessage"></p>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button id="logoutBtn" class="btn btn-text">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/assignment.js"></script>
+</body>
+</html>

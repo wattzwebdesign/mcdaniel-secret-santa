@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+</head>
+<body>
+    <div class="snowfall"></div>
+    <div class="container">
+        <!-- Admin Login -->
+        <div id="adminLoginCard" class="card">
+            <div class="card-header">
+                <h1 class="title christmas-title">🎅 Admin Access 🎅</h1>
+            </div>
+            <div class="card-body">
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <label for="adminPassword">Admin Password</label>
+                        <input type="password" id="adminPassword" required>
+                    </div>
+                    <div id="loginError" class="error-message" style="display: none;"></div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                    <a href="/" class="btn btn-text">← Back to Login</a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Admin Panel -->
+        <div id="adminPanel" style="display: none;">
+            <div class="admin-header">
+                <h1 class="title christmas-title">Admin Control Panel</h1>
+                <button id="adminLogoutBtn" class="btn btn-secondary">Logout</button>
+            </div>
+
+            <!-- Game Status -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📊 Game Status</h2>
+                </div>
+                <div class="card-body">
+                    <div id="gameStatus" class="stats-grid"></div>
+                    <button id="refreshStatusBtn" class="btn btn-secondary">Refresh Status</button>
+                </div>
+            </div>
+
+            <!-- Participant Management -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>👥 Participants</h2>
+                </div>
+                <div class="card-body">
+                    <form id="addParticipantForm" class="admin-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <input type="text" id="newFirstName" placeholder="First Name" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="tel" id="newPhoneNumber" placeholder="Phone Number" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Participant</button>
+                        </div>
+                    </form>
+                    <div id="participantsList" class="data-table"></div>
+                </div>
+            </div>
+
+            <!-- Exclusion Rules -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>🚫 Exclusion Rules</h2>
+                </div>
+                <div class="card-body">
+                    <form id="addExclusionForm" class="admin-form">
+                        <div class="form-row">
+                            <select id="exclusionParticipant" required>
+                                <option value="">Select Participant</option>
+                            </select>
+                            <span>cannot pick</span>
+                            <select id="exclusionExcluded" required>
+                                <option value="">Select Person</option>
+                            </select>
+                            <input type="text" id="exclusionReason" placeholder="Reason (e.g., spouse)">
+                            <button type="submit" class="btn btn-primary">Add Rule</button>
+                        </div>
+                    </form>
+                    <div id="exclusionsList" class="data-table"></div>
+                    <h3>Family Group Quick-Add</h3>
+                    <form id="addFamilyGroupForm">
+                        <div id="familyGroupSelector"></div>
+                        <input type="text" id="familyReason" placeholder="Reason (e.g., family)" value="family">
+                        <button type="submit" class="btn btn-primary">Add Family Exclusions</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>📱 SMS Notifications</h2>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group">
+                        <button id="sendGameStartBtn" class="btn btn-primary">Send Game Start 🎅</button>
+                        <button id="sendWishlistReminderBtn" class="btn btn-secondary">Send Wishlist Reminder 📝</button>
+                        <button id="sendShoppingReminderBtn" class="btn btn-secondary">Send Shopping Reminder 🛒</button>
+                        <button id="sendExchangeDayBtn" class="btn btn-primary">Send Exchange Day 🎉</button>
+                    </div>
+                    <div id="smsStats" class="stats-grid"></div>
+                </div>
+            </div>
+
+            <!-- Game Controls -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎮 Game Controls</h2>
+                </div>
+                <div class="card-body">
+                    <div class="btn-group">
+                        <button id="validateGameBtn" class="btn btn-secondary">Validate Game</button>
+                        <button id="resetAssignmentsBtn" class="btn btn-warning">Reset Assignments</button>
+                        <button id="resetAllBtn" class="btn btn-danger">Clear All Data</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/admin.js"></script>
+</body>
+</html>
