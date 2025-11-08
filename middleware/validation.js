@@ -72,10 +72,15 @@ const validateWishListItem = [
         .trim()
         .isLength({ max: 1000 }).withMessage('Description must be less than 1000 characters'),
     body('link')
-        .optional()
+        .optional({ values: 'falsy' })
         .trim()
-        .isURL({ protocols: ['http', 'https'], require_protocol: true })
-        .withMessage('Link must be a valid URL')
+        .custom((value) => {
+            if (!value) return true; // Allow empty string
+            // Simple URL validation that allows http/https
+            const urlPattern = /^https?:\/\/.+/i;
+            return urlPattern.test(value);
+        })
+        .withMessage('Link must be a valid URL starting with http:// or https://')
         .isLength({ max: 500 }).withMessage('Link must be less than 500 characters'),
     body('priceRange')
         .optional()
@@ -84,6 +89,9 @@ const validateWishListItem = [
     body('priority')
         .optional()
         .isInt({ min: 1, max: 3 }).withMessage('Priority must be 1, 2, or 3'),
+    body('nonParticipantId')
+        .optional()
+        .isInt({ min: 1 }).withMessage('Non-participant ID must be a positive integer'),
     validate
 ];
 
