@@ -25,6 +25,9 @@ const PORT = process.env.PORT || 3000;
 
 // ===== MIDDLEWARE =====
 
+// Trust proxy (required for Cloudflare/Nginx)
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(helmet({
     contentSecurityPolicy: false // Disable for development, enable in production with proper config
