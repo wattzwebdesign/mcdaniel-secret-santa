@@ -27,6 +27,13 @@
                     <h3>Add New Item</h3>
                     <form id="addItemForm">
                         <div class="form-group">
+                            <label for="addingFor">Adding For</label>
+                            <select id="addingFor">
+                                <option value="">Myself</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
                             <label for="itemName">Item Name *</label>
                             <input type="text" id="itemName" required placeholder="e.g., Cozy Blanket">
                         </div>
@@ -78,6 +85,12 @@
                     </div>
 
                     <div id="itemsList" class="items-grid"></div>
+                </div>
+
+                <!-- Non-Participant Wishlists -->
+                <div id="nonParticipantWishlists" style="display: none;">
+                    <h3 style="margin-top: 2rem; padding-top: 2rem; border-top: 2px solid #e9ecef;">Wishlists for Others</h3>
+                    <div id="nonParticipantsList"></div>
                 </div>
             </div>
 

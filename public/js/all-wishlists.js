@@ -70,13 +70,14 @@ function renderWishlists() {
         const cardId = `wishlist-card-${index}`;
         const hasItems = person.items.length > 0;
         const itemLabel = person.items.length === 1 ? 'item' : 'items';
+        const isNonParticipant = person.type === 'non-participant';
 
         html += `
-            <div class="sms-template-card" id="${cardId}">
+            <div class="sms-template-card${isNonParticipant ? ' non-participant-card' : ''}" id="${cardId}">
                 <div class="sms-template-header" onclick="toggleWishlist('${cardId}')">
                     <div class="sms-template-title-area">
                         <h4>${escapeHtml(person.name)}</h4>
-                        ${person.type === 'non-participant' ? `<p style="color: #666; font-size: 0.8rem;">Managed by ${escapeHtml(person.managed_by_name)}</p>` : ''}
+                        ${isNonParticipant ? `<p style="color: #666; font-size: 0.8rem;"><i data-lucide="user-check" style="width: 12px; height: 12px; vertical-align: middle;"></i> Managed by ${escapeHtml(person.managed_by_name)}</p>` : ''}
                     </div>
                     <div class="sms-template-toggle">
                         <span class="badge ${hasItems ? 'badge-success' : 'badge-warning'}">

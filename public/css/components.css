@@ -395,6 +395,20 @@
     overflow: hidden;
 }
 
+/* Non-participant card styling - visually distinct */
+.sms-template-card.non-participant-card {
+    border-left: 4px solid var(--christmas-gold);
+    background: linear-gradient(to right, #fffbf0 0%, white 10%);
+}
+
+.sms-template-card.non-participant-card .sms-template-header {
+    background: linear-gradient(to right, #fffbf0 0%, white 10%);
+}
+
+.sms-template-card.non-participant-card .sms-template-header:hover {
+    background: linear-gradient(to right, #fff8e6 0%, #f8f9fa 10%);
+}
+
 .sms-template-header {
     display: flex;
     justify-content: space-between;

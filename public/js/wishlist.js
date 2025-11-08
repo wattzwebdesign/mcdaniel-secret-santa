@@ -1,6 +1,7 @@
 // Wishlist page functionality
 
 let currentItems = [];
+let currentNonParticipants = [];
 
 async function loadWishList() {
     try {
@@ -19,17 +20,36 @@ async function loadWishList() {
         }
 
         currentItems = data.items || [];
+        currentNonParticipants = data.nonParticipants || [];
 
+        // Populate the "Adding For" selector
+        populateAddingForSelector();
+
+        // Render participant's own wishlist
         if (currentItems.length === 0) {
             showElement('emptyState');
         } else {
             renderItems(currentItems);
             showElement('itemsList');
         }
+
+        // Render non-participant wishlists
+        renderNonParticipantWishlists();
     } catch (error) {
         hideElement('loadingItems');
         showError('An error occurred', 'formError');
     }
+}
+
+function populateAddingForSelector() {
+    const selector = document.getElementById('addingFor');
+    let html = '<option value="">Myself</option>';
+
+    currentNonParticipants.forEach(np => {
+        html += `<option value="${np.nonParticipant.id}">${escapeHtml(np.nonParticipant.name)}</option>`;
+    });
+
+    selector.innerHTML = html;
 }
 
 function renderItems(items) {
@@ -56,9 +76,55 @@ function getPriorityLabel(priority) {
     return labels[priority] || '';
 }
 
+function renderNonParticipantWishlists() {
+    if (currentNonParticipants.length === 0) {
+        hideElement('nonParticipantWishlists');
+        return;
+    }
+
+    const container = document.getElementById('nonParticipantsList');
+    let html = '';
+
+    currentNonParticipants.forEach(np => {
+        const npInfo = np.nonParticipant;
+        const items = np.items || [];
+
+        html += `
+            <div class="wish-list-items" style="margin-bottom: 2rem;">
+                <h4 style="color: var(--dark-text); margin-bottom: 0.5rem;">${escapeHtml(npInfo.name)}</h4>
+                ${npInfo.notes ? `<p style="color: #666; font-size: 0.875rem; margin-bottom: 1rem; font-style: italic;">${escapeHtml(npInfo.notes)}</p>` : ''}
+
+                ${items.length === 0 ?
+                    '<p class="empty-state" style="font-size: 0.9rem;">No items added yet.</p>' :
+                    '<div class="items-grid">' + items.map(item => `
+                        <div class="wish-item" data-id="${item.id}" data-non-participant="true">
+                            <div class="wish-item-header">
+                                <h3>${escapeHtml(item.item_name)}</h3>
+                                <span class="priority-badge priority-${item.priority}">${getPriorityLabel(item.priority)}</span>
+                            </div>
+                            ${item.description ? `<p class="wish-item-description">${escapeHtml(item.description)}</p>` : ''}
+                            <div class="wish-item-footer">
+                                ${item.price_range ? `<span class="price-tag">💰 ${escapeHtml(item.price_range)}</span>` : ''}
+                                ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" class="btn btn-sm btn-secondary">View Link 🔗</a>` : ''}
+                                <button class="btn btn-sm btn-primary" onclick="editItem(${item.id})">Edit ✏️</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete 🗑️</button>
+                            </div>
+                        </div>
+                    `).join('') + '</div>'
+                }
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+    showElement('nonParticipantWishlists');
+}
+
 async function addItem(e) {
     e.preventDefault();
     hideError('formError');
+
+    const nonParticipantId = document.getElementById('addingFor').value;
 
     const itemData = {
         itemName: document.getElementById('itemName').value,
@@ -67,6 +133,11 @@ async function addItem(e) {
         priceRange: document.getElementById('priceRange').value,
         priority: parseInt(document.getElementById('priority').value)
     };
+
+    // Add nonParticipantId if selected
+    if (nonParticipantId) {
+        itemData.nonParticipantId = parseInt(nonParticipantId);
+    }
 
     try {
         const response = await api('/api/wishlist/items', {
@@ -88,7 +159,17 @@ async function addItem(e) {
 }
 
 function editItem(itemId) {
-    const item = currentItems.find(i => i.id === itemId);
+    // Search in participant's items
+    let item = currentItems.find(i => i.id === itemId);
+
+    // If not found, search in non-participant items
+    if (!item) {
+        for (const np of currentNonParticipants) {
+            item = np.items.find(i => i.id === itemId);
+            if (item) break;
+        }
+    }
+
     if (!item) return;
 
     document.getElementById('editItemId').value = item.id;
