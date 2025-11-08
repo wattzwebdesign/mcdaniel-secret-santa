@@ -393,6 +393,43 @@ async function getSMSLogs(req, res) {
     }
 }
 
+// Get SMS queue (pending messages)
+async function getSMSQueue(req, res) {
+    try {
+        const sql = `
+            SELECT
+                q.id,
+                q.participant_id,
+                p.first_name,
+                q.phone_number,
+                q.message_type,
+                q.message_body,
+                q.priority,
+                q.scheduled_for,
+                q.processed,
+                q.created_at
+            FROM sms_queue q
+            JOIN participants p ON q.participant_id = p.id
+            WHERE q.processed = FALSE
+            ORDER BY q.priority ASC, q.scheduled_for ASC
+            LIMIT 100
+        `;
+
+        const queue = await db.query(sql);
+
+        res.json({
+            success: true,
+            queue
+        });
+    } catch (error) {
+        console.error('Get SMS queue error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching SMS queue'
+        });
+    }
+}
+
 // Get SMS statistics
 async function getSMSStats(req, res) {
     try {
@@ -620,6 +657,7 @@ module.exports = {
     sendNotificationToAll,
     sendReminder,
     getSMSLogs,
+    getSMSQueue,
     getSMSStats,
     getSMSTemplates,
     getEventSettings,

@@ -38,7 +38,8 @@ async function loadAdminData() {
         loadSMSTemplates(),
         loadSMSStats(),
         loadEventSettings(),
-        loadEditableSMSTemplates()
+        loadEditableSMSTemplates(),
+        loadSMSLogs()
     ]);
 }
 
@@ -444,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('resetAssignmentsBtn').addEventListener('click', resetAssignments);
     document.getElementById('resetAllBtn').addEventListener('click', resetAll);
     document.getElementById('eventSettingsForm').addEventListener('submit', saveEventSettings);
+    document.getElementById('refreshLogsBtn').addEventListener('click', refreshSMSLogs);
 });
 
 // Load event settings
@@ -571,7 +573,124 @@ async function saveTemplate(e, templateId) {
     }
 }
 
+// Load SMS logs and queue
+async function loadSMSLogs() {
+    try {
+        // Load pending messages (queue)
+        const queueResponse = await api('/api/admin/notifications/queue');
+        const queueData = await queueResponse.json();
+
+        // Load sent messages (logs)
+        const logsResponse = await api('/api/admin/notifications/logs?limit=50');
+        const logsData = await logsResponse.json();
+
+        if (queueData.success) {
+            renderSMSQueue(queueData.queue || []);
+        }
+
+        if (logsData.success) {
+            renderSMSSentLogs(logsData.logs || []);
+        }
+    } catch (error) {
+        console.error('Failed to load SMS logs:', error);
+    }
+}
+
+// Render SMS queue (pending messages)
+function renderSMSQueue(queue) {
+    const container = document.getElementById('smsQueueList');
+
+    if (queue.length === 0) {
+        container.innerHTML = '<p class="empty-state">No pending messages in queue.</p>';
+        return;
+    }
+
+    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; color: white;">';
+    html += '<thead><tr style="background: rgba(255,255,255,0.1);">';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Participant</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Type</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Message Preview</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Priority</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Scheduled</th>';
+    html += '</tr></thead><tbody>';
+
+    queue.forEach(msg => {
+        const preview = msg.message_body.substring(0, 60) + (msg.message_body.length > 60 ? '...' : '');
+        const scheduledDate = new Date(msg.scheduled_for);
+        const formattedDate = scheduledDate.toLocaleString();
+
+        html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
+        html += `<td style="padding: 0.75rem;">${escapeHtml(msg.first_name)}</td>`;
+        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: rgba(76, 175, 80, 0.3); border-radius: 4px; font-size: 0.85rem;">${escapeHtml(msg.message_type)}</span></td>`;
+        html += `<td style="padding: 0.75rem; max-width: 300px;">${escapeHtml(preview)}</td>`;
+        html += `<td style="padding: 0.75rem; text-align: center;">${msg.priority}</td>`;
+        html += `<td style="padding: 0.75rem; font-size: 0.9rem;">${formattedDate}</td>`;
+        html += '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// Render SMS sent logs
+function renderSMSSentLogs(logs) {
+    const container = document.getElementById('smsSentList');
+
+    if (logs.length === 0) {
+        container.innerHTML = '<p class="empty-state">No messages sent yet.</p>';
+        return;
+    }
+
+    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; color: white;">';
+    html += '<thead><tr style="background: rgba(255,255,255,0.1);">';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Participant</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Type</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Message Preview</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Status</th>';
+    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Sent</th>';
+    html += '</tr></thead><tbody>';
+
+    logs.forEach(log => {
+        const preview = log.message_body.substring(0, 60) + (log.message_body.length > 60 ? '...' : '');
+        const sentDate = new Date(log.sent_at);
+        const formattedDate = sentDate.toLocaleString();
+
+        let statusColor = 'rgba(76, 175, 80, 0.3)'; // green for delivered
+        let statusText = log.status;
+
+        if (log.status === 'failed') {
+            statusColor = 'rgba(244, 67, 54, 0.3)'; // red for failed
+        } else if (log.status === 'sent' || log.status === 'queued') {
+            statusColor = 'rgba(255, 193, 7, 0.3)'; // yellow for pending
+        }
+
+        html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
+        html += `<td style="padding: 0.75rem;">${escapeHtml(log.first_name)}</td>`;
+        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: rgba(33, 150, 243, 0.3); border-radius: 4px; font-size: 0.85rem;">${escapeHtml(log.message_type)}</span></td>`;
+        html += `<td style="padding: 0.75rem; max-width: 300px;">${escapeHtml(preview)}</td>`;
+        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: ${statusColor}; border-radius: 4px; font-size: 0.85rem;">${escapeHtml(statusText)}</span></td>`;
+        html += `<td style="padding: 0.75rem; font-size: 0.9rem;">${formattedDate}</td>`;
+        html += '</tr>';
+
+        // Show error message if failed
+        if (log.status === 'failed' && log.error_message) {
+            html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
+            html += `<td colspan="5" style="padding: 0.5rem 0.75rem; background: rgba(244, 67, 54, 0.1); font-size: 0.85rem; color: rgba(255,255,255,0.7);">Error: ${escapeHtml(log.error_message)}</td>`;
+            html += '</tr>';
+        }
+    });
+
+    html += '</tbody></table></div>';
+    container.innerHTML = html;
+}
+
+// Refresh SMS logs
+async function refreshSMSLogs() {
+    await loadSMSLogs();
+}
+
 // Export functions for onclick handlers
 window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
 window.saveTemplate = saveTemplate;
+window.refreshSMSLogs = refreshSMSLogs;
