@@ -7,9 +7,9 @@ async function login(req, res) {
     try {
         const { firstName, phoneNumber } = req.body;
 
-        // Format phone number and extract last 4 digits
-        const formattedPhone = twilioService.formatPhoneNumber(phoneNumber);
-        const lastFour = twilioService.extractLastFour(formattedPhone);
+        // Extract last 4 digits (handle both full numbers and just last 4)
+        const cleaned = phoneNumber.replace(/\D/g, '');
+        const lastFour = cleaned.length === 4 ? cleaned : cleaned.slice(-4);
 
         // Find participant by first name and phone last four
         const sql = `
