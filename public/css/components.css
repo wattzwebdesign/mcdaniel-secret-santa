@@ -303,7 +303,7 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.5rem;
+    padding: 0.75rem;
     background: white;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
@@ -313,10 +313,19 @@
 
 .family-checkbox-label:hover {
     border-color: var(--christmas-green);
+    background: #f8f9fa;
 }
 
-.family-checkbox-label input:checked {
+.family-checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
     accent-color: var(--christmas-green);
+}
+
+.family-checkbox-label:has(input:checked) {
+    background: #e8f5e9;
+    border-color: var(--christmas-green);
 }
 
 /* Button Loading State */

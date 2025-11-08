@@ -333,9 +333,9 @@ function updateParticipantSelectors() {
 
     // Family group selector
     const familyHtml = participants.map(p => `
-        <label class="family-checkbox-label">
-            <input type="checkbox" name="familyMember" value="${p.id}">
-            ${escapeHtml(p.first_name)}
+        <label class="family-checkbox-label" for="family_${p.id}">
+            <input type="checkbox" id="family_${p.id}" name="familyMember" value="${p.id}">
+            <span>${escapeHtml(p.first_name)}</span>
         </label>
     `).join('');
     document.getElementById('familyGroupSelector').innerHTML = familyHtml;
