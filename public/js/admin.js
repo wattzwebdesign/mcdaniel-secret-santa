@@ -302,7 +302,7 @@ async function loadSMSTemplates() {
             ? '<span class="badge badge-success">✓ SMS Enabled</span>'
             : '<span class="badge badge-warning">⚠ SMS Disabled (Preview Only)</span>';
 
-        let html = `<div style="margin-bottom: 1rem;">${statusBadge}</div><div class="sms-templates-grid">`;
+        let html = `<div style="margin-bottom: 1rem;">${statusBadge}</div>`;
 
         Object.keys(templates).forEach(key => {
             const template = templates[key];
@@ -323,7 +323,6 @@ ${escapeHtml(template.preview)}</div>
             `;
         });
 
-        html += '</div>';
         document.getElementById('smsTemplatesContainer').innerHTML = html;
     } catch (error) {
         console.error('Failed to load SMS templates:', error);
