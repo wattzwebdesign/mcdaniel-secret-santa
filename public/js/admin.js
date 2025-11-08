@@ -168,7 +168,7 @@ async function editParticipant(id) {
                 <i data-lucide="check"></i>
             </button>
             <button class="btn btn-sm btn-secondary" onclick="cancelParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\\\`')}\`)">
-                <i data-lucide="x" style="stroke: white; color: white;"></i>
+                <i data-lucide="x"></i>
             </button>
         </div>
     `;
@@ -468,7 +468,7 @@ async function editNonParticipant(id) {
                 <i data-lucide="check"></i>
             </button>
             <button class="btn btn-sm btn-secondary" onclick="cancelNonParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\\\`')}\`)">
-                <i data-lucide="x" style="stroke: white; color: white;"></i>
+                <i data-lucide="x"></i>
             </button>
         </div>
     `;
