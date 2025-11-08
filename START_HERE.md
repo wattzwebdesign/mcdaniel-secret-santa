@@ -17,8 +17,8 @@ Everything has been configured with your specific settings:
 npm install
 
 # Step 2: Import database schema
-mysql -u u170340_mcdaniel -p s170340_mcdaniel < sql/schema.sql
-# Password: 9XNErEBZMenXgSow
+./IMPORT_DATABASE.sh
+# (or manually: mysql -u u170340_mcdaniel -p s170340_mcdaniel < sql/schema.sql)
 
 # Step 3: Start the application
 npm start

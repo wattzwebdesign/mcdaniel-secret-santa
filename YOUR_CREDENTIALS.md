@@ -42,6 +42,13 @@ mysql -u u170340_mcdaniel -p
 ```
 
 ### Import Schema
+
+**Option 1: Using the script (recommended)**
+```bash
+./IMPORT_DATABASE.sh
+```
+
+**Option 2: Manual import**
 ```bash
 mysql -u u170340_mcdaniel -p s170340_mcdaniel < sql/schema.sql
 # Password: 9XNErEBZMenXgSow
