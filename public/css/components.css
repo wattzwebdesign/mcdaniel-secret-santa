@@ -328,6 +328,13 @@
     border-color: var(--christmas-green);
 }
 
+/* White icon styling for buttons */
+.btn-secondary .lucide,
+.btn-secondary svg {
+    stroke: white !important;
+    color: white !important;
+}
+
 /* Button Loading State */
 .btn .btn-loader {
     display: inline-block;
