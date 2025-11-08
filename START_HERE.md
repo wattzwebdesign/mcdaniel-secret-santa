@@ -32,10 +32,14 @@ Then open: **http://localhost:3343**
 
 | File | Description |
 |------|-------------|
+| **SETUP_CHECKLIST.md** ⭐⭐⭐ | Complete step-by-step checklist |
 | **YOUR_CREDENTIALS.md** ⭐ | Your database info & quick commands |
 | **QUICKSTART.md** ⭐ | 5-minute local setup guide |
 | **MCDANIEL_SETUP.md** ⭐ | Production deployment for your domain |
+| **TROUBLESHOOTING.md** | Fix common issues |
 | `.env` | Already configured with your settings |
+| `generate-secrets.sh` | Generate secure SESSION_SECRET |
+| `IMPORT_DATABASE.sh` | Import database schema |
 | `README.md` | Complete documentation |
 | `DEPLOYMENT.md` | Full production deployment guide |
 
