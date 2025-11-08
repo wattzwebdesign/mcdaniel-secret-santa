@@ -6,7 +6,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Only allow numbers in last 4 digits input
     phoneInput.addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
+        // Remove all non-numeric characters and limit to 4 digits
+        const value = e.target.value.replace(/\D/g, '').slice(0, 4);
+        e.target.value = value;
+    });
+
+    // Prevent paste of formatted numbers
+    phoneInput.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        const cleaned = pastedText.replace(/\D/g, '').slice(0, 4);
+        e.target.value = cleaned;
     });
 
     // Handle login form submission
