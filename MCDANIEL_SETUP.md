@@ -48,13 +48,13 @@ nslookup mcdanielfamilychristmas.com
 ```env
 # Database Configuration
 DB_HOST=localhost
-DB_USER=secret_santa_user
-DB_PASSWORD=CHANGE_THIS_SECURE_PASSWORD
-DB_NAME=secret_santa
+DB_USER=u170340_mcdaniel
+DB_PASSWORD=9XNErEBZMenXgSow
+DB_NAME=s170340_mcdaniel
 DB_PORT=3306
 
 # Server Configuration
-PORT=3000
+PORT=3343
 NODE_ENV=production
 SESSION_SECRET=GENERATE_RANDOM_32_CHAR_KEY
 
@@ -111,7 +111,7 @@ server {
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3343;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';

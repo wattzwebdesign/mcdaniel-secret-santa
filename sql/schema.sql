@@ -148,8 +148,7 @@ CREATE TABLE sessions (
 INSERT INTO admin_config (config_key, config_value) VALUES
     ('game_started', 'false'),
     ('exchange_date', '2025-12-25'),
-    ('sms_enabled', 'true'),
-    ('last_notification_sent', NULL);
+    ('sms_enabled', 'true');
 
 -- Sample data (optional - for testing)
 -- Uncomment to add test participants

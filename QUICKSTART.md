@@ -19,20 +19,17 @@ npm install
 ### 2. Set Up Database
 
 ```bash
-# Login to MySQL
-mysql -u root -p
+# Login to MySQL with your credentials
+mysql -u u170340_mcdaniel -p
+# Password: 9XNErEBZMenXgSow
 
-# Create database
-CREATE DATABASE secret_santa CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
-# Use the database
-USE secret_santa;
-
+# Database s170340_mcdaniel already exists
 # Exit MySQL
 EXIT;
 
 # Import schema
-mysql -u root -p secret_santa < sql/schema.sql
+mysql -u u170340_mcdaniel -p s170340_mcdaniel < sql/schema.sql
+# Password: 9XNErEBZMenXgSow
 ```
 
 ### 3. Configure Environment
@@ -45,18 +42,18 @@ cp .env.example .env
 nano .env
 ```
 
-**Minimum required settings for local development:**
+**Your settings (already configured in .env):**
 
 ```env
 # Database
 DB_HOST=localhost
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=secret_santa
+DB_USER=u170340_mcdaniel
+DB_PASSWORD=9XNErEBZMenXgSow
+DB_NAME=s170340_mcdaniel
 DB_PORT=3306
 
 # Server
-PORT=3000
+PORT=3343
 NODE_ENV=development
 SESSION_SECRET=my-super-secret-key-for-development
 
@@ -97,7 +94,7 @@ You should see:
 🎅 ================================================
    Secret Santa Application Started!
    ================================================
-   🌐 Server: http://localhost:3000
+   🌐 Server: http://localhost:3343
    📊 Environment: development
    📱 SMS: Disabled
    ================================================
@@ -106,14 +103,14 @@ You should see:
 ### 5. Access the Application
 
 Open your browser and go to:
-- **User Interface:** http://localhost:3000
-- **Admin Panel:** http://localhost:3000/admin.html
+- **User Interface:** http://localhost:3343
+- **Admin Panel:** http://localhost:3343/admin.html
 
 ## First Time Setup
 
 ### Admin Setup
 
-1. Go to http://localhost:3000/admin.html
+1. Go to http://localhost:3343/admin.html
 2. Login with password: `admin123` (or whatever you set in `.env`)
 3. Add participants:
    - Name: `John`, Phone: `+15551234567`
@@ -131,7 +128,7 @@ Open your browser and go to:
 
 ### Participant Login
 
-1. Go to http://localhost:3000
+1. Go to http://localhost:3343
 2. Login as a participant:
    - First Name: `John`
    - Phone Number: `(555) 123-4567`
@@ -243,8 +240,9 @@ mysql -u root -p secret_santa < sql/schema.sql
 
 **Port Already in Use**
 ```bash
-# Change PORT in .env to 3001 or another port
-PORT=3001
+# Your app is configured for port 3343
+# If needed, change PORT in .env to another port
+PORT=3344
 ```
 
 **Database Connection Failed**

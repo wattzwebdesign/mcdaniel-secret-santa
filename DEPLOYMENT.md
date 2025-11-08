@@ -76,7 +76,7 @@ DB_NAME=secret_santa
 DB_PORT=3306
 
 # Server Configuration
-PORT=3000
+PORT=3343
 NODE_ENV=production
 SESSION_SECRET=generate-a-long-random-secret-key-here
 
@@ -184,7 +184,7 @@ server {
     add_header X-XSS-Protection "1; mode=block" always;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:3343;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
