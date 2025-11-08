@@ -306,27 +306,50 @@ async function loadSMSTemplates() {
 
         let html = '';
 
-        Object.keys(templates).forEach(key => {
+        Object.keys(templates).forEach((key, index) => {
             const template = templates[key];
             const badgeClass = template.isSingleSegment ? 'badge-success' : 'badge-warning';
+            const cardId = `sms-template-${index}`;
 
             html += `
-                <div class="sms-template-card">
-                    <h4>${template.name}</h4>
-                    <p>${template.description}</p>
-                    <div class="sms-template-preview">${escapeHtml(template.preview)}</div>
-                    <div class="sms-template-footer">
-                        <span class="badge ${badgeClass}">
-                            ${template.length} chars • ${template.segments} seg
-                        </span>
+                <div class="sms-template-card" id="${cardId}">
+                    <div class="sms-template-header" onclick="toggleSMSTemplate('${cardId}')">
+                        <div class="sms-template-title-area">
+                            <h4>${template.name}</h4>
+                            <p>${template.description}</p>
+                        </div>
+                        <div class="sms-template-toggle">
+                            <span class="badge ${badgeClass}">
+                                ${template.length} chars • ${template.segments} seg
+                            </span>
+                            <i data-lucide="chevron-down"></i>
+                        </div>
+                    </div>
+                    <div class="sms-template-content">
+                        <div class="sms-template-content-inner">
+                            <div class="sms-template-preview">${escapeHtml(template.preview)}</div>
+                        </div>
                     </div>
                 </div>
             `;
         });
 
         document.getElementById('smsTemplatesContainer').innerHTML = html;
+
+        // Re-initialize Lucide icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     } catch (error) {
         console.error('Failed to load SMS templates:', error);
+    }
+}
+
+// Toggle SMS template card
+function toggleSMSTemplate(cardId) {
+    const card = document.getElementById(cardId);
+    if (card) {
+        card.classList.toggle('expanded');
     }
 }
 
@@ -694,3 +717,4 @@ window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
 window.saveTemplate = saveTemplate;
 window.refreshSMSLogs = refreshSMSLogs;
+window.toggleSMSTemplate = toggleSMSTemplate;

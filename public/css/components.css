@@ -354,7 +354,7 @@
 
 .dashboard-container {
     display: grid;
-    grid-template-columns: 33% 66%;
+    grid-template-columns: 25% 75%;
     gap: 1.5rem;
     align-items: start;
 }
@@ -380,43 +380,84 @@
     margin-bottom: 2rem;
 }
 
-/* SMS Templates Grid */
+/* SMS Templates - Single Column with Collapsible Cards */
 .sms-templates-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-    align-items: start;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .sms-template-card {
     background: white;
     border-radius: 8px;
-    padding: 1.25rem;
     transition: all 0.3s ease;
     border: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    min-height: 280px;
-    box-sizing: border-box;
+    overflow: hidden;
 }
 
-.sms-template-card:hover {
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
+.sms-template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    background: white;
+    transition: background 0.2s;
+}
+
+.sms-template-header:hover {
+    background: #f8f9fa;
+}
+
+.sms-template-title-area {
+    flex: 1;
 }
 
 .sms-template-card h4 {
-    margin: 0 0 0.5rem 0;
+    margin: 0 0 0.25rem 0;
     color: var(--christmas-red);
     font-size: 0.95rem;
     font-weight: 600;
 }
 
 .sms-template-card p {
-    margin: 0 0 0.75rem 0;
+    margin: 0;
     color: #666;
     font-size: 0.85rem;
     line-height: 1.4;
+}
+
+.sms-template-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+}
+
+.sms-template-toggle i,
+.sms-template-toggle svg {
+    width: 18px;
+    height: 18px;
+    transition: transform 0.3s ease;
+}
+
+.sms-template-card.expanded .sms-template-toggle i,
+.sms-template-card.expanded .sms-template-toggle svg {
+    transform: rotate(180deg);
+}
+
+.sms-template-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.sms-template-card.expanded .sms-template-content {
+    max-height: 500px;
+}
+
+.sms-template-content-inner {
+    padding: 0 1.25rem 1.25rem 1.25rem;
 }
 
 .sms-template-preview {
@@ -428,14 +469,10 @@
     white-space: pre-wrap;
     margin-bottom: 0.75rem;
     border: 1px solid #e0e0e0;
-    max-height: 140px;
-    overflow-y: auto;
-    flex: 1;
     line-height: 1.5;
 }
 
 .sms-template-footer {
-    margin-top: auto;
     padding-top: 0.5rem;
 }
 
