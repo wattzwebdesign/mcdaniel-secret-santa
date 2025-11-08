@@ -13,21 +13,26 @@
 
 .snowfall::before,
 .snowfall::after {
-    content: "❄️ ❄ ✻ ❆ ❄️ ❅ ✻ ❄ ❆ ❄️ ❅ ✻ ❄ ❆ ❄️ ❅ ✻ ❄ ❆ ❄️";
+    content: "❄️  ❄  ✻  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❄  ✻  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆";
     position: absolute;
     top: -100px;
     left: 0;
-    width: 200%;
-    font-size: 20px;
-    color: rgba(255, 255, 255, 0.8);
+    width: 300%;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+    letter-spacing: 30px;
     animation: snowfall 20s linear infinite;
+    will-change: transform;
 }
 
 .snowfall::after {
     animation-delay: 10s;
     animation-duration: 25s;
-    font-size: 16px;
-    color: rgba(255, 255, 255, 0.6);
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
+    letter-spacing: 25px;
 }
 
 @keyframes snowfall {

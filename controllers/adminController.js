@@ -413,6 +413,87 @@ async function getSMSStats(req, res) {
     }
 }
 
+// Get SMS template previews
+async function getSMSTemplates(req, res) {
+    try {
+        const smsTemplates = require('../templates/smsTemplates');
+        const appUrl = process.env.APP_URL || 'http://localhost:3000';
+
+        // Get sample participant for preview
+        const [sampleParticipant] = await db.query(
+            'SELECT first_name FROM participants LIMIT 1'
+        );
+
+        const recipientName = sampleParticipant?.first_name || 'John';
+        const firstName = 'Jane';
+
+        const templates = {
+            game_start: {
+                name: 'Game Start Notification',
+                description: 'Sent when admin starts the Secret Santa game',
+                preview: smsTemplates.getGameStartMessage(appUrl),
+                type: 'game_start'
+            },
+            assignment: {
+                name: 'Assignment Notification',
+                description: 'Sent when participant draws their Secret Santa',
+                preview: smsTemplates.getAssignmentMessage(recipientName, appUrl),
+                type: 'assignment'
+            },
+            wishlist_update: {
+                name: 'Wish List Update',
+                description: 'Sent when recipient updates their wish list',
+                preview: smsTemplates.getWishListUpdateMessage(recipientName, appUrl),
+                type: 'wishlist_update'
+            },
+            wishlist_reminder: {
+                name: 'Wish List Reminder',
+                description: 'Reminds participants to add wish list items',
+                preview: smsTemplates.getWishListReminderMessage(appUrl),
+                type: 'wishlist_reminder'
+            },
+            shopping_reminder: {
+                name: 'Shopping Reminder',
+                description: 'Reminds participants to shop for their person',
+                preview: smsTemplates.getShoppingReminderMessage(recipientName, 7, appUrl),
+                type: 'shopping_reminder'
+            },
+            exchange_day: {
+                name: 'Exchange Day Reminder',
+                description: 'Sent on the day of gift exchange',
+                preview: smsTemplates.getExchangeDayMessage(recipientName),
+                type: 'exchange_day'
+            },
+            test: {
+                name: 'Test Message',
+                description: 'Test message to verify SMS is working',
+                preview: smsTemplates.getTestMessage(firstName),
+                type: 'test'
+            }
+        };
+
+        // Add character counts
+        Object.keys(templates).forEach(key => {
+            const validation = smsTemplates.validateMessageLength(templates[key].preview);
+            templates[key].length = validation.length;
+            templates[key].segments = validation.segments;
+            templates[key].isSingleSegment = validation.isSingleSegment;
+        });
+
+        res.json({
+            success: true,
+            templates,
+            smsEnabled: process.env.SMS_ENABLED === 'true'
+        });
+    } catch (error) {
+        console.error('Get SMS templates error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching SMS templates'
+        });
+    }
+}
+
 module.exports = {
     getParticipants,
     addParticipant,
@@ -428,5 +509,6 @@ module.exports = {
     sendNotificationToAll,
     sendReminder,
     getSMSLogs,
-    getSMSStats
+    getSMSStats,
+    getSMSTemplates
 };

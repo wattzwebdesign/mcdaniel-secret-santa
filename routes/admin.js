@@ -34,5 +34,6 @@ router.post('/notifications/send-all', adminController.sendNotificationToAll);
 router.post('/notifications/reminder', adminController.sendReminder);
 router.get('/notifications/logs', adminController.getSMSLogs);
 router.get('/notifications/stats', adminController.getSMSStats);
+router.get('/notifications/templates', adminController.getSMSTemplates);
 
 module.exports = router;

@@ -35,6 +35,7 @@ async function loadAdminData() {
         loadGameStatus(),
         loadParticipants(),
         loadExclusions(),
+        loadSMSTemplates(),
         loadSMSStats()
     ]);
 }
@@ -282,6 +283,47 @@ async function addFamilyGroup(e) {
         }
     } catch (error) {
         alert('An error occurred');
+    }
+}
+
+async function loadSMSTemplates() {
+    try {
+        const response = await api('/api/admin/notifications/templates');
+        const data = await response.json();
+
+        if (!data.success) return;
+
+        const { templates, smsEnabled } = data;
+
+        const statusBadge = smsEnabled
+            ? '<span style="color: #28a745; font-weight: bold;">✓ SMS Enabled</span>'
+            : '<span style="color: #ffc107; font-weight: bold;">⚠ SMS Disabled (Preview Only)</span>';
+
+        let html = `<div style="margin-bottom: 1rem;">${statusBadge}</div>`;
+
+        Object.keys(templates).forEach(key => {
+            const template = templates[key];
+            const segmentColor = template.isSingleSegment ? '#28a745' : '#ffc107';
+
+            html += `
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-gold);">${template.name}</h4>
+                    <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">${template.description}</p>
+                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 4px; font-family: monospace; white-space: pre-wrap; margin-bottom: 0.5rem;">
+${escapeHtml(template.preview)}</div>
+                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
+                        <span style="color: ${segmentColor};">
+                            ${template.length} characters • ${template.segments} SMS segment${template.segments > 1 ? 's' : ''}
+                        </span>
+                        ${!template.isSingleSegment ? ' <span style="color: #ffc107;">⚠ Multi-segment (costs more)</span>' : ''}
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('smsTemplatesContainer').innerHTML = html;
+    } catch (error) {
+        console.error('Failed to load SMS templates:', error);
     }
 }
 
