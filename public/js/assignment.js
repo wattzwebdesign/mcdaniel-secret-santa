@@ -84,6 +84,12 @@ async function loadEventDetails() {
             }
 
             html += '</div>';
+
+            // Add calendar button if event date exists
+            if (settings.exchange_date) {
+                html += '<button id="addToCalendarBtn" class="btn btn-primary btn-sm" style="margin-top: 1rem; width: 100%;" onclick="downloadCalendar()"><i data-lucide="calendar-plus"></i> Add to Calendar</button>';
+            }
+
             widget.innerHTML = html;
 
             // Re-initialize icons
@@ -97,6 +103,16 @@ async function loadEventDetails() {
         console.error('Failed to load event details:', error);
         document.getElementById('eventDetailsWidget').innerHTML = '<p style="font-size: 0.875rem; color: #999; font-style: italic;">Event details unavailable</p>';
     }
+}
+
+function downloadCalendar() {
+    // Create a temporary link and trigger download
+    const link = document.createElement('a');
+    link.href = '/api/participant/calendar.ics';
+    link.download = 'secret-santa.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 async function drawAssignment() {
@@ -133,3 +149,6 @@ loadAssignment();
 
 document.getElementById('drawBtn').addEventListener('click', drawAssignment);
 document.getElementById('logoutBtn').addEventListener('click', logout);
+
+// Export function for onclick handler
+window.downloadCalendar = downloadCalendar;

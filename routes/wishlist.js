@@ -28,4 +28,7 @@ router.get('/recipient-items', requireHasPicked, wishlistController.getRecipient
 // PATCH /api/wishlist/mark-purchased/:id - Mark item as purchased
 router.patch('/mark-purchased/:id', requireHasPicked, validateIdParam, wishlistController.markPurchased);
 
+// GET /api/wishlist/all-wishlists - Get all participants' wishlists (read-only view)
+router.get('/all-wishlists', wishlistController.getAllWishlists);
+
 module.exports = router;

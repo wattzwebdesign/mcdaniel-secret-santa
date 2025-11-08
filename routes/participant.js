@@ -18,4 +18,7 @@ router.get('/can-pick', participantController.canPick);
 // GET /api/participant/event-details - Get event settings
 router.get('/event-details', participantController.getEventDetails);
 
+// GET /api/participant/calendar.ics - Download calendar file
+router.get('/calendar.ics', participantController.getCalendarICS);
+
 module.exports = router;

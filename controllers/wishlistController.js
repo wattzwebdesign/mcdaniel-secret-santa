@@ -336,6 +336,58 @@ async function markPurchased(req, res) {
     }
 }
 
+// Get all wishlists (for all-wishlists page - read-only view)
+async function getAllWishlists(req, res) {
+    try {
+        // Get all participants
+        const participantsSql = `
+            SELECT id, first_name
+            FROM participants
+            ORDER BY first_name ASC
+        `;
+        const participants = await db.query(participantsSql);
+
+        // Get all wish list items for all participants
+        const itemsSql = `
+            SELECT
+                id,
+                participant_id,
+                item_name,
+                description,
+                link,
+                price_range,
+                priority,
+                display_order
+            FROM wish_list_items
+            ORDER BY display_order ASC, priority ASC, created_at ASC
+        `;
+        const items = await db.query(itemsSql);
+
+        // Group items by participant
+        const wishlists = participants.map(participant => {
+            const participantItems = items.filter(item => item.participant_id === participant.id);
+
+            return {
+                id: participant.id,
+                name: participant.first_name,
+                type: 'participant',
+                items: participantItems
+            };
+        });
+
+        res.json({
+            success: true,
+            wishlists
+        });
+    } catch (error) {
+        console.error('Get all wishlists error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching wishlists'
+        });
+    }
+}
+
 module.exports = {
     getMyItems,
     addItem,
@@ -343,5 +395,6 @@ module.exports = {
     deleteItem,
     reorderItems,
     getRecipientItems,
-    markPurchased
+    markPurchased,
+    getAllWishlists
 };

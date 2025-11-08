@@ -686,6 +686,162 @@ async function updateSMSTemplate(req, res) {
     }
 }
 
+// Get all non-participants
+async function getNonParticipants(req, res) {
+    try {
+        const sql = `
+            SELECT
+                np.id,
+                np.name,
+                np.managed_by_participant_id,
+                np.notes,
+                np.created_at,
+                p.first_name as managed_by_name
+            FROM non_participants np
+            JOIN participants p ON np.managed_by_participant_id = p.id
+            ORDER BY np.name ASC
+        `;
+
+        const nonParticipants = await db.query(sql);
+
+        res.json({
+            success: true,
+            nonParticipants
+        });
+    } catch (error) {
+        console.error('Get non-participants error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching non-participants'
+        });
+    }
+}
+
+// Add non-participant
+async function addNonParticipant(req, res) {
+    try {
+        const { name, managedByParticipantId, notes } = req.body;
+
+        if (!name || !managedByParticipantId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and manager are required'
+            });
+        }
+
+        // Verify the manager participant exists
+        const checkSql = 'SELECT id FROM participants WHERE id = ?';
+        const [participant] = await db.query(checkSql, [managedByParticipantId]);
+
+        if (!participant) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid manager participant'
+            });
+        }
+
+        const sql = `
+            INSERT INTO non_participants (name, managed_by_participant_id, notes)
+            VALUES (?, ?, ?)
+        `;
+
+        const result = await db.query(sql, [name, managedByParticipantId, notes || null]);
+
+        res.json({
+            success: true,
+            nonParticipantId: result.insertId,
+            message: 'Non-participant added successfully'
+        });
+    } catch (error) {
+        console.error('Add non-participant error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while adding non-participant'
+        });
+    }
+}
+
+// Update non-participant
+async function updateNonParticipant(req, res) {
+    try {
+        const nonParticipantId = parseInt(req.params.id);
+        const { name, managedByParticipantId, notes } = req.body;
+
+        if (!name || !managedByParticipantId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Name and manager are required'
+            });
+        }
+
+        // Verify the manager participant exists
+        const checkSql = 'SELECT id FROM participants WHERE id = ?';
+        const [participant] = await db.query(checkSql, [managedByParticipantId]);
+
+        if (!participant) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid manager participant'
+            });
+        }
+
+        const sql = `
+            UPDATE non_participants
+            SET name = ?, managed_by_participant_id = ?, notes = ?
+            WHERE id = ?
+        `;
+
+        const result = await db.query(sql, [name, managedByParticipantId, notes || null, nonParticipantId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Non-participant not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Non-participant updated successfully'
+        });
+    } catch (error) {
+        console.error('Update non-participant error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating non-participant'
+        });
+    }
+}
+
+// Remove non-participant
+async function removeNonParticipant(req, res) {
+    try {
+        const nonParticipantId = parseInt(req.params.id);
+
+        // Delete non-participant (wishlist items will cascade delete)
+        const sql = 'DELETE FROM non_participants WHERE id = ?';
+        const result = await db.query(sql, [nonParticipantId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Non-participant not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Non-participant removed successfully'
+        });
+    } catch (error) {
+        console.error('Remove non-participant error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while removing non-participant'
+        });
+    }
+}
+
 module.exports = {
     getParticipants,
     addParticipant,
@@ -708,5 +864,9 @@ module.exports = {
     getEventSettings,
     updateEventSettings,
     getEditableSMSTemplates,
-    updateSMSTemplate
+    updateSMSTemplate,
+    getNonParticipants,
+    addNonParticipant,
+    updateNonParticipant,
+    removeNonParticipant
 };

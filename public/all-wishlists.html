@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa - All Wishlists</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/snowfall.css">
+    <link rel="stylesheet" href="/css/components.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="snowfall"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="admin-header">
+            <h1 class="title christmas-title"><i data-lucide="list"></i> All Wishlists</h1>
+            <div style="display: flex; gap: 0.75rem;">
+                <a href="/assignment.html" class="btn btn-secondary"><i data-lucide="arrow-left"></i> Back</a>
+                <button id="logoutBtn" class="btn btn-secondary"><i data-lucide="log-out"></i> Logout</button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state" style="background: white; border-radius: 12px; padding: 3rem;">
+            <div class="spinner">🎄</div>
+            <p>Loading wishlists...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="error-message" style="display: none;">
+            <p id="errorMessage"></p>
+        </div>
+
+        <!-- Wishlists Content -->
+        <div id="wishlistsContent" style="display: none;">
+            <div class="dashboard-container">
+                <!-- Left Sidebar - Info -->
+                <div class="dashboard-sidebar">
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="info"></i></div>
+                            <h2 class="widget-title">About</h2>
+                        </div>
+                        <div class="widget-body" style="font-size: 0.875rem; color: #666; line-height: 1.6;">
+                            <p style="margin-bottom: 0.5rem;">This is a read-only view of everyone's wishlists.</p>
+                            <p style="margin-bottom: 0.5rem;"><i data-lucide="eye" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> View all gift ideas</p>
+                            <p><i data-lucide="lock" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> Read-only access</p>
+                        </div>
+                    </div>
+
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="bar-chart"></i></div>
+                            <h2 class="widget-title">Summary</h2>
+                        </div>
+                        <div class="widget-body" id="summaryStats">
+                            <p style="font-size: 0.875rem; color: #666;">Loading stats...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Main - Wishlists -->
+                <div class="dashboard-main">
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="gift"></i></div>
+                            <h2 class="widget-title">Everyone's Wishlists</h2>
+                        </div>
+                        <div class="widget-body">
+                            <div id="wishlistsContainer" class="sms-templates-grid"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/main.js"></script>
+    <script src="/js/snowfall.js"></script>
+    <script src="/js/all-wishlists.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

@@ -44,4 +44,10 @@ router.put('/settings/event', adminController.updateEventSettings);
 router.get('/settings/sms-templates', adminController.getEditableSMSTemplates);
 router.put('/settings/sms-templates/:id', adminController.updateSMSTemplate);
 
+// Non-Participant Management
+router.get('/non-participants', adminController.getNonParticipants);
+router.post('/non-participants', adminController.addNonParticipant);
+router.put('/non-participants/:id', validateIdParam, adminController.updateNonParticipant);
+router.delete('/non-participants/:id', validateIdParam, adminController.removeNonParticipant);
+
 module.exports = router;
