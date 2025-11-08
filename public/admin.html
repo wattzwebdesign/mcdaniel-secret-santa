@@ -135,6 +135,10 @@
                             </form>
                             <div id="exclusionsList" class="data-table data-table-scrollable"></div>
                             <h3 style="margin: 1.5rem 0 1rem 0; color: var(--dark-text);"><i data-lucide="home" style="width: 18px; height: 18px; vertical-align: middle;"></i> Family Group Quick-Add</h3>
+                            <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                                <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+                                Select names of all members of the same family to quickly make it so they cannot select each other
+                            </p>
                             <form id="addFamilyGroupForm" class="admin-form">
                                 <div id="familyGroupSelector"></div>
                                 <div class="form-group" style="margin-top: 1rem;">
@@ -186,7 +190,11 @@
                             <div id="smsStatusBadge" style="margin-bottom: 1rem;"></div>
                             <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
                                 <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i>
-                                Available variables: <code>{appUrl}</code>, <code>{recipientName}</code>, <code>{firstName}</code>, <code>{daysRemaining}</code>
+                                Available variables (click to copy):
+                                <code class="copy-variable" onclick="copyToClipboard('{appUrl}')" style="cursor: pointer; background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 3px; margin: 0 0.25rem;">{appUrl}</code>
+                                <code class="copy-variable" onclick="copyToClipboard('{recipientName}')" style="cursor: pointer; background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 3px; margin: 0 0.25rem;">{recipientName}</code>
+                                <code class="copy-variable" onclick="copyToClipboard('{firstName}')" style="cursor: pointer; background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 3px; margin: 0 0.25rem;">{firstName}</code>
+                                <code class="copy-variable" onclick="copyToClipboard('{daysRemaining}')" style="cursor: pointer; background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 3px; margin: 0 0.25rem;">{daysRemaining}</code>
                             </p>
                             <div id="smsTemplatesContainer" class="sms-templates-grid"></div>
                         </div>

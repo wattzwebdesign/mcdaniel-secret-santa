@@ -5,9 +5,7 @@ function getGameStartMessage(appUrl) {
 
 Login at ${appUrl} with your name and last 4 digits of this number to draw your person.
 
-Don't forget to add your wish list! 🎁
-
-Reply STOP to opt out`;
+Don't forget to add your wish list! 🎁`;
 }
 
 function getAssignmentMessage(recipientName, appUrl) {
@@ -17,9 +15,7 @@ You're shopping for: ${recipientName}
 
 View their wish list at ${appUrl}/recipient-wishlist.html
 
-Keep it secret! 🤫
-
-Reply STOP to opt out`;
+Keep it secret! 🤫`;
 }
 
 function getWishListUpdateMessage(recipientName, appUrl) {
@@ -27,17 +23,13 @@ function getWishListUpdateMessage(recipientName, appUrl) {
 
 ${recipientName} just updated their wish list!
 
-Check it out: ${appUrl}/recipient-wishlist.html
-
-Reply STOP to opt out`;
+Check it out: ${appUrl}/recipient-wishlist.html`;
 }
 
 function getWishListReminderMessage(appUrl) {
     return `🎅 Reminder: Your Secret Santa is waiting!
 
-Help them pick the perfect gift by adding to your wish list at ${appUrl}/wishlist.html
-
-Reply STOP to opt out`;
+Help them pick the perfect gift by adding to your wish list at ${appUrl}/wishlist.html`;
 }
 
 function getShoppingReminderMessage(recipientName, daysRemaining, appUrl) {
@@ -47,9 +39,7 @@ Secret Santa exchange is in ${daysRemaining} day${daysRemaining === 1 ? '' : 's'
 
 Don't forget to shop for ${recipientName}!
 
-Their wish list: ${appUrl}/recipient-wishlist.html
-
-Reply STOP to opt out`;
+Their wish list: ${appUrl}/recipient-wishlist.html`;
 }
 
 function getExchangeDayMessage(recipientName) {
@@ -59,9 +49,7 @@ Secret Santa gift exchange is TODAY!
 
 You're giving to: ${recipientName}
 
-Have fun! 🎅🎁
-
-Reply STOP to opt out`;
+Have fun! 🎅🎁`;
 }
 
 function getTestMessage(firstName) {
@@ -69,9 +57,7 @@ function getTestMessage(firstName) {
 
 Hi ${firstName}! This is a test message from your Secret Santa app.
 
-If you received this, SMS notifications are working! ✅
-
-Reply STOP to opt out`;
+If you received this, SMS notifications are working! ✅`;
 }
 
 // Get message by type

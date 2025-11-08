@@ -168,7 +168,7 @@ async function editParticipant(id) {
                 <i data-lucide="check"></i>
             </button>
             <button class="btn btn-sm btn-secondary" onclick="cancelParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
-                <i data-lucide="x"></i>
+                <i data-lucide="x" style="color: white;"></i>
             </button>
         </div>
     `;
@@ -468,7 +468,7 @@ async function editNonParticipant(id) {
                 <i data-lucide="check"></i>
             </button>
             <button class="btn btn-sm btn-secondary" onclick="cancelNonParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
-                <i data-lucide="x"></i>
+                <i data-lucide="x" style="color: white;"></i>
             </button>
         </div>
     `;
@@ -897,7 +897,7 @@ function renderSMSQueue(queue) {
         return;
     }
 
-    let html = '<div class="data-table"><table>';
+    let html = '<div class="data-table data-table-scrollable" style="max-height: 400px; overflow-y: auto;"><table>';
     html += '<thead><tr>';
     html += '<th>Participant</th>';
     html += '<th>Type</th>';
@@ -933,7 +933,7 @@ function renderSMSSentLogs(logs) {
         return;
     }
 
-    let html = '<div class="data-table"><table>';
+    let html = '<div class="data-table data-table-scrollable" style="max-height: 400px; overflow-y: auto;"><table>';
     html += '<thead><tr>';
     html += '<th>Participant</th>';
     html += '<th>Type</th>';
@@ -981,6 +981,29 @@ async function refreshSMSLogs() {
     await loadSMSLogs();
 }
 
+// Copy to clipboard helper
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Show a brief success message
+        const tempMsg = document.createElement('span');
+        tempMsg.textContent = ' ✓ Copied!';
+        tempMsg.style.color = 'var(--christmas-green)';
+        tempMsg.style.fontSize = '0.85rem';
+        tempMsg.style.marginLeft = '0.5rem';
+
+        // Find the clicked element and add message
+        const clickedElement = event.target;
+        clickedElement.parentNode.appendChild(tempMsg);
+
+        // Remove message after 1.5 seconds
+        setTimeout(() => {
+            tempMsg.remove();
+        }, 1500);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+    });
+}
+
 // Export functions for onclick handlers
 window.editParticipant = editParticipant;
 window.saveParticipantEdit = saveParticipantEdit;
@@ -996,3 +1019,4 @@ window.toggleSMSTemplate = toggleSMSTemplate;
 window.editTemplateInline = editTemplateInline;
 window.cancelTemplateEdit = cancelTemplateEdit;
 window.saveTemplateInline = saveTemplateInline;
+window.copyToClipboard = copyToClipboard;
