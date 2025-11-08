@@ -145,6 +145,35 @@
                         </div>
                     </div>
 
+                    <!-- Non-Participant Wishlists Widget -->
+                    <div class="widget">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="baby"></i></div>
+                            <h2 class="widget-title">Non-Participant Wishlists</h2>
+                        </div>
+                        <div class="widget-body">
+                            <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                                <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+                                Add people who don't participate in the drawing but have wishlists (e.g., children, grandparents)
+                            </p>
+                            <form id="addNonParticipantForm" class="admin-form">
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <input type="text" id="newNonParticipantName" placeholder="Name (e.g., Little Timmy)" required>
+                                    </div>
+                                    <select id="nonParticipantManager" required>
+                                        <option value="">Assign Manager...</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary"><i data-lucide="user-plus"></i> Add</button>
+                                </div>
+                                <div class="form-group" style="margin-top: 0.5rem;">
+                                    <input type="text" id="newNonParticipantNotes" placeholder="Notes (e.g., age 5, likes dinosaurs)">
+                                </div>
+                            </form>
+                            <div id="nonParticipantsList" class="data-table data-table-scrollable"></div>
+                        </div>
+                    </div>
+
                     <!-- SMS Templates Widget -->
                     <div class="widget">
                         <div class="widget-header">

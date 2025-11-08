@@ -35,6 +35,7 @@ async function loadAdminData() {
         loadGameStatus(),
         loadParticipants(),
         loadExclusions(),
+        loadNonParticipants(),
         loadSMSTemplates(),
         loadSMSStats(),
         loadEventSettings(),
@@ -327,6 +328,9 @@ function updateParticipantSelectors() {
     document.getElementById('exclusionParticipant').innerHTML = html;
     document.getElementById('exclusionExcluded').innerHTML = html;
 
+    // Non-participant manager selector
+    document.getElementById('nonParticipantManager').innerHTML = html;
+
     // Family group selector
     const familyHtml = participants.map(p => `
         <label class="family-checkbox-label">
@@ -363,6 +367,169 @@ async function addFamilyGroup(e) {
             await loadExclusions();
         } else {
             alert(data.message || 'Failed to add family group');
+        }
+    } catch (error) {
+        alert('An error occurred');
+    }
+}
+
+// Non-Participants Management
+let nonParticipants = [];
+
+async function loadNonParticipants() {
+    try {
+        const response = await api('/api/admin/non-participants');
+        const data = await response.json();
+
+        if (!data.success) return;
+
+        nonParticipants = data.nonParticipants || [];
+        renderNonParticipants();
+    } catch (error) {
+        console.error('Failed to load non-participants:', error);
+    }
+}
+
+function renderNonParticipants() {
+    const container = document.getElementById('nonParticipantsList');
+    if (nonParticipants.length === 0) {
+        container.innerHTML = '<p class="empty-state">No non-participants added yet.</p>';
+        return;
+    }
+
+    container.innerHTML = nonParticipants.map(np => `
+        <div class="participant-item" data-non-participant-id="${np.id}">
+            <div class="participant-info">
+                <div class="participant-name">${escapeHtml(np.name)}
+                    <span class="badge badge-info" style="margin-left: 0.5rem; font-size: 0.7rem;">Managed by ${escapeHtml(np.managed_by_name)}</span>
+                </div>
+                ${np.notes ? `<div class="participant-meta">${escapeHtml(np.notes)}</div>` : ''}
+            </div>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-sm btn-secondary" onclick="editNonParticipant(${np.id})"><i data-lucide="edit-2"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="removeNonParticipant(${np.id})"><i data-lucide="trash-2"></i></button>
+            </div>
+        </div>
+    `).join('');
+
+    // Re-initialize icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+}
+
+async function addNonParticipant(e) {
+    e.preventDefault();
+
+    const name = document.getElementById('newNonParticipantName').value.trim();
+    const managedByParticipantId = parseInt(document.getElementById('nonParticipantManager').value);
+    const notes = document.getElementById('newNonParticipantNotes').value.trim();
+
+    try {
+        const response = await api('/api/admin/non-participants', {
+            method: 'POST',
+            body: JSON.stringify({ name, managedByParticipantId, notes })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('addNonParticipantForm').reset();
+            await loadNonParticipants();
+        } else {
+            alert(data.message || 'Failed to add non-participant');
+        }
+    } catch (error) {
+        alert('An error occurred');
+    }
+}
+
+async function editNonParticipant(id) {
+    const nonParticipant = nonParticipants.find(np => np.id === id);
+    if (!nonParticipant) return;
+
+    const item = document.querySelector(`.participant-item[data-non-participant-id="${id}"]`);
+    if (!item) return;
+
+    const originalContent = item.innerHTML;
+
+    item.innerHTML = `
+        <div class="participant-edit-form" style="flex: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="edit_np_name_${id}" value="${escapeHtml(nonParticipant.name)}" placeholder="Name" style="flex: 1; padding: 0.5rem; border: 2px solid var(--christmas-green); border-radius: 6px; font-size: 0.95rem;">
+                <select id="edit_np_manager_${id}" style="flex: 1; padding: 0.5rem; border: 2px solid var(--christmas-green); border-radius: 6px; font-size: 0.95rem;">
+                    ${participants.map(p => `<option value="${p.id}" ${p.id === nonParticipant.managed_by_participant_id ? 'selected' : ''}>${escapeHtml(p.first_name)}</option>`).join('')}
+                </select>
+            </div>
+            <input type="text" id="edit_np_notes_${id}" value="${escapeHtml(nonParticipant.notes || '')}" placeholder="Notes (optional)" style="padding: 0.5rem; border: 2px solid var(--christmas-green); border-radius: 6px; font-size: 0.95rem;">
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm btn-success" onclick="saveNonParticipantEdit(${id})">
+                <i data-lucide="check"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="cancelNonParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+    `;
+
+    // Re-initialize icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    document.getElementById(`edit_np_name_${id}`).focus();
+}
+
+function cancelNonParticipantEdit(id, originalContent) {
+    const item = document.querySelector(`.participant-item[data-non-participant-id="${id}"]`);
+    if (item) {
+        item.innerHTML = originalContent;
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+async function saveNonParticipantEdit(id) {
+    const name = document.getElementById(`edit_np_name_${id}`).value.trim();
+    const managedByParticipantId = parseInt(document.getElementById(`edit_np_manager_${id}`).value);
+    const notes = document.getElementById(`edit_np_notes_${id}`).value.trim();
+
+    if (!name) {
+        alert('Please provide a name');
+        return;
+    }
+
+    try {
+        const response = await api(`/api/admin/non-participants/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ name, managedByParticipantId, notes })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            await loadNonParticipants();
+        } else {
+            alert(data.message || 'Failed to update non-participant');
+        }
+    } catch (error) {
+        alert('An error occurred');
+    }
+}
+
+async function removeNonParticipant(id) {
+    if (!confirmAction('Remove this non-participant? This will delete their wishlist too.')) return;
+
+    try {
+        const response = await api(`/api/admin/non-participants/${id}`, { method: 'DELETE' });
+        const data = await response.json();
+
+        if (data.success) {
+            await loadNonParticipants();
+        } else {
+            alert(data.message || 'Failed to remove non-participant');
         }
     } catch (error) {
         alert('An error occurred');
@@ -637,6 +804,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addParticipantForm').addEventListener('submit', addParticipant);
     document.getElementById('addExclusionForm').addEventListener('submit', addExclusion);
     document.getElementById('addFamilyGroupForm').addEventListener('submit', addFamilyGroup);
+    document.getElementById('addNonParticipantForm').addEventListener('submit', addNonParticipant);
     document.getElementById('refreshStatusBtn').addEventListener('click', loadGameStatus);
     document.getElementById('sendGameStartBtn').addEventListener('click', () => sendNotification('game_start'));
     document.getElementById('sendWishlistReminderBtn').addEventListener('click', () => sendNotification('wishlist_reminder'));
@@ -819,6 +987,10 @@ window.saveParticipantEdit = saveParticipantEdit;
 window.cancelParticipantEdit = cancelParticipantEdit;
 window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
+window.editNonParticipant = editNonParticipant;
+window.saveNonParticipantEdit = saveNonParticipantEdit;
+window.cancelNonParticipantEdit = cancelNonParticipantEdit;
+window.removeNonParticipant = removeNonParticipant;
 window.refreshSMSLogs = refreshSMSLogs;
 window.toggleSMSTemplate = toggleSMSTemplate;
 window.editTemplateInline = editTemplateInline;

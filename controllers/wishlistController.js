@@ -6,9 +6,12 @@ async function getMyItems(req, res) {
     try {
         const participantId = req.session.participantId;
 
-        const sql = `
+        // Get participant's own items
+        const myItemsSql = `
             SELECT
                 id,
+                participant_id,
+                non_participant_id,
                 item_name,
                 description,
                 link,
@@ -22,11 +25,50 @@ async function getMyItems(req, res) {
             ORDER BY display_order ASC, priority ASC, created_at ASC
         `;
 
-        const items = await db.query(sql, [participantId]);
+        const myItems = await db.query(myItemsSql, [participantId]);
+
+        // Get non-participants managed by this participant
+        const nonParticipantsSql = `
+            SELECT id, name, notes
+            FROM non_participants
+            WHERE managed_by_participant_id = ?
+            ORDER BY name ASC
+        `;
+
+        const nonParticipants = await db.query(nonParticipantsSql, [participantId]);
+
+        // Get items for each non-participant
+        const nonParticipantItems = [];
+        for (const np of nonParticipants) {
+            const npItemsSql = `
+                SELECT
+                    id,
+                    participant_id,
+                    non_participant_id,
+                    item_name,
+                    description,
+                    link,
+                    price_range,
+                    priority,
+                    display_order,
+                    created_at,
+                    updated_at
+                FROM wish_list_items
+                WHERE non_participant_id = ?
+                ORDER BY display_order ASC, priority ASC, created_at ASC
+            `;
+
+            const items = await db.query(npItemsSql, [np.id]);
+            nonParticipantItems.push({
+                nonParticipant: np,
+                items
+            });
+        }
 
         res.json({
             success: true,
-            items
+            items: myItems,
+            nonParticipants: nonParticipantItems
         });
     } catch (error) {
         console.error('Get my items error:', error);
@@ -41,16 +83,30 @@ async function getMyItems(req, res) {
 async function addItem(req, res) {
     try {
         const participantId = req.session.participantId;
-        const { itemName, description, link, priceRange, priority } = req.body;
+        const { itemName, description, link, priceRange, priority, nonParticipantId } = req.body;
+
+        // If adding for a non-participant, verify the user manages them
+        if (nonParticipantId) {
+            const checkSql = 'SELECT id FROM non_participants WHERE id = ? AND managed_by_participant_id = ?';
+            const [npCheck] = await db.query(checkSql, [nonParticipantId, participantId]);
+
+            if (!npCheck) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'You do not manage this non-participant'
+                });
+            }
+        }
 
         const sql = `
             INSERT INTO wish_list_items
-            (participant_id, item_name, description, link, price_range, priority)
-            VALUES (?, ?, ?, ?, ?, ?)
+            (participant_id, non_participant_id, item_name, description, link, price_range, priority)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
         `;
 
         const result = await db.query(sql, [
-            participantId,
+            nonParticipantId ? null : participantId,
+            nonParticipantId || null,
             itemName,
             description || null,
             link || null,
@@ -58,9 +114,11 @@ async function addItem(req, res) {
             priority || 2
         ]);
 
-        // Notify Santa asynchronously
-        notificationService.notifyWishListUpdate(participantId)
-            .catch(err => console.error('Error notifying Santa:', err));
+        // Notify Santa asynchronously (only for participant's own wishlist)
+        if (!nonParticipantId) {
+            notificationService.notifyWishListUpdate(participantId)
+                .catch(err => console.error('Error notifying Santa:', err));
+        }
 
         res.json({
             success: true,
@@ -83,8 +141,16 @@ async function updateItem(req, res) {
         const itemId = parseInt(req.params.id);
         const { itemName, description, link, priceRange, priority } = req.body;
 
-        // Check ownership
-        const checkSql = `SELECT participant_id FROM wish_list_items WHERE id = ?`;
+        // Check ownership - allow if it's participant's own item OR if they manage the non-participant
+        const checkSql = `
+            SELECT
+                w.participant_id,
+                w.non_participant_id,
+                np.managed_by_participant_id
+            FROM wish_list_items w
+            LEFT JOIN non_participants np ON w.non_participant_id = np.id
+            WHERE w.id = ?
+        `;
         const [item] = await db.query(checkSql, [itemId]);
 
         if (!item) {
@@ -94,7 +160,11 @@ async function updateItem(req, res) {
             });
         }
 
-        if (item.participant_id !== participantId) {
+        // Check if user owns this item (either directly or manages the non-participant)
+        const isOwner = item.participant_id === participantId;
+        const managesNonParticipant = item.non_participant_id && item.managed_by_participant_id === participantId;
+
+        if (!isOwner && !managesNonParticipant) {
             return res.status(403).json({
                 success: false,
                 message: 'You can only edit your own wish list items'
@@ -120,9 +190,11 @@ async function updateItem(req, res) {
             itemId
         ]);
 
-        // Notify Santa asynchronously
-        notificationService.notifyWishListUpdate(participantId)
-            .catch(err => console.error('Error notifying Santa:', err));
+        // Notify Santa asynchronously (only for participant's own items)
+        if (isOwner) {
+            notificationService.notifyWishListUpdate(participantId)
+                .catch(err => console.error('Error notifying Santa:', err));
+        }
 
         res.json({
             success: true,
@@ -143,8 +215,16 @@ async function deleteItem(req, res) {
         const participantId = req.session.participantId;
         const itemId = parseInt(req.params.id);
 
-        // Check ownership
-        const checkSql = `SELECT participant_id FROM wish_list_items WHERE id = ?`;
+        // Check ownership - allow if it's participant's own item OR if they manage the non-participant
+        const checkSql = `
+            SELECT
+                w.participant_id,
+                w.non_participant_id,
+                np.managed_by_participant_id
+            FROM wish_list_items w
+            LEFT JOIN non_participants np ON w.non_participant_id = np.id
+            WHERE w.id = ?
+        `;
         const [item] = await db.query(checkSql, [itemId]);
 
         if (!item) {
@@ -154,7 +234,11 @@ async function deleteItem(req, res) {
             });
         }
 
-        if (item.participant_id !== participantId) {
+        // Check if user owns this item (either directly or manages the non-participant)
+        const isOwner = item.participant_id === participantId;
+        const managesNonParticipant = item.non_participant_id && item.managed_by_participant_id === participantId;
+
+        if (!isOwner && !managesNonParticipant) {
             return res.status(403).json({
                 success: false,
                 message: 'You can only delete your own wish list items'
@@ -347,11 +431,25 @@ async function getAllWishlists(req, res) {
         `;
         const participants = await db.query(participantsSql);
 
-        // Get all wish list items for all participants
+        // Get all non-participants
+        const nonParticipantsSql = `
+            SELECT
+                np.id,
+                np.name,
+                np.managed_by_participant_id,
+                p.first_name as managed_by_name
+            FROM non_participants np
+            JOIN participants p ON np.managed_by_participant_id = p.id
+            ORDER BY np.name ASC
+        `;
+        const nonParticipants = await db.query(nonParticipantsSql);
+
+        // Get all wish list items for both participants and non-participants
         const itemsSql = `
             SELECT
                 id,
                 participant_id,
+                non_participant_id,
                 item_name,
                 description,
                 link,
@@ -364,7 +462,7 @@ async function getAllWishlists(req, res) {
         const items = await db.query(itemsSql);
 
         // Group items by participant
-        const wishlists = participants.map(participant => {
+        const participantWishlists = participants.map(participant => {
             const participantItems = items.filter(item => item.participant_id === participant.id);
 
             return {
@@ -374,6 +472,22 @@ async function getAllWishlists(req, res) {
                 items: participantItems
             };
         });
+
+        // Group items by non-participant
+        const nonParticipantWishlists = nonParticipants.map(nonParticipant => {
+            const npItems = items.filter(item => item.non_participant_id === nonParticipant.id);
+
+            return {
+                id: nonParticipant.id,
+                name: nonParticipant.name,
+                type: 'non-participant',
+                managed_by_name: nonParticipant.managed_by_name,
+                items: npItems
+            };
+        });
+
+        // Combine both lists
+        const wishlists = [...participantWishlists, ...nonParticipantWishlists];
 
         res.json({
             success: true,
