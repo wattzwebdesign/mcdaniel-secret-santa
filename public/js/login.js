@@ -4,9 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
     const phoneInput = document.getElementById('phoneNumber');
 
-    // Format phone number as user types
+    // Only allow numbers in last 4 digits input
     phoneInput.addEventListener('input', (e) => {
-        e.target.value = formatPhoneNumber(e.target.value);
+        e.target.value = e.target.value.replace(/[^0-9]/g, '').slice(0, 4);
     });
 
     // Handle login form submission

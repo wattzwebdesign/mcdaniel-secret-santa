@@ -11,50 +11,21 @@
     overflow: hidden;
 }
 
-.snowfall::before,
-.snowfall::after {
-    content: "❄️  ❄  ✻  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❄  ✻  ❆  ❄️  ❅  ✻  ❄  ❆  ❄️  ❅  ✻  ❄  ❆";
-    position: absolute;
-    top: -100px;
-    left: 0;
-    width: 300%;
-    font-size: 24px;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
-    letter-spacing: 30px;
-    animation: snowfall 20s linear infinite;
-    will-change: transform;
-}
-
-.snowfall::after {
-    animation-delay: 10s;
-    animation-duration: 25s;
-    font-size: 18px;
-    color: rgba(255, 255, 255, 0.75);
-    text-shadow: 0 0 3px rgba(255, 255, 255, 0.6);
-    letter-spacing: 25px;
-}
-
-@keyframes snowfall {
+/* Snowflake animation */
+@keyframes snowfallDrop {
     0% {
-        transform: translateY(-100px) translateX(0);
+        transform: translateY(0) translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
     }
     100% {
-        transform: translateY(100vh) translateX(100px);
-    }
-}
-
-/* Additional snowflake layers for more depth */
-.snowfall::before {
-    animation: snowfall1 20s linear infinite;
-}
-
-@keyframes snowfall1 {
-    0% {
-        transform: translateY(-100px) translateX(-50px);
-    }
-    100% {
-        transform: translateY(calc(100vh + 100px)) translateX(50px);
+        transform: translateY(110vh) translateX(var(--end-x, 50px)) rotate(360deg);
+        opacity: 0;
     }
 }
 
@@ -118,11 +89,12 @@ body::after {
 
 /* Disable effects on small screens for performance */
 @media (max-width: 768px) {
-    .snowfall::after {
-        display: none;
-    }
-
     body::before {
         font-size: 1rem;
+    }
+
+    /* Reduce snowflakes on mobile */
+    .snowflake:nth-child(n+15) {
+        display: none;
     }
 }
