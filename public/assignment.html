@@ -10,64 +10,140 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/snowfall.css">
     <link rel="stylesheet" href="/css/components.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div class="snowfall"></div>
 
     <div class="container">
-        <div class="card">
-            <div class="card-header">
-                <h1 class="title christmas-title">🎅 Secret Santa 🎅</h1>
-                <p class="subtitle">Welcome, <span id="userName"></span>!</p>
-            </div>
+        <!-- Header -->
+        <div class="admin-header">
+            <h1 class="title christmas-title"><i data-lucide="gift"></i> Secret Santa</h1>
+            <button id="logoutBtn" class="btn btn-secondary"><i data-lucide="log-out"></i> Logout</button>
+        </div>
 
-            <div class="card-body">
-                <!-- Loading State -->
-                <div id="loadingState" class="loading-state">
-                    <div class="spinner">🎄</div>
-                    <p>Loading your assignment...</p>
-                </div>
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state" style="background: white; border-radius: 12px; padding: 3rem;">
+            <div class="spinner">🎄</div>
+            <p>Loading your assignment...</p>
+        </div>
 
-                <!-- Not Picked Yet -->
-                <div id="notPickedState" class="text-center" style="display: none;">
-                    <div class="present-box">🎁</div>
-                    <h2>Ready to draw your Secret Santa?</h2>
-                    <p>Click the button below to find out who you're shopping for!</p>
-                    <button id="drawBtn" class="btn btn-primary btn-lg">
-                        Draw Your Secret Santa 🎲
-                    </button>
-                </div>
+        <!-- Error State -->
+        <div id="errorState" class="error-message" style="display: none;">
+            <p id="errorMessage"></p>
+        </div>
 
-                <!-- Assignment Revealed -->
-                <div id="assignmentState" class="text-center" style="display: none;">
-                    <div class="reveal-animation">
-                        <div class="gift-icon">🎁</div>
-                        <h2>You're shopping for...</h2>
-                        <div class="recipient-name" id="recipientName"></div>
-                        <p class="secret-reminder">🤫 Keep it secret! 🤫</p>
+        <!-- Not Picked Yet State -->
+        <div id="notPickedState" style="display: none;">
+            <div class="dashboard-container">
+                <!-- Left Column - Welcome -->
+                <div class="dashboard-sidebar">
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="user"></i></div>
+                            <h2 class="widget-title">Welcome!</h2>
+                        </div>
+                        <div class="widget-body">
+                            <p style="font-size: 1.1rem; font-weight: 500; color: var(--dark-text); margin-bottom: 0.5rem;">
+                                <span id="userName1"></span>
+                            </p>
+                            <p style="font-size: 0.875rem; color: #666;">
+                                Ready to find out who you're shopping for?
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="navigation-buttons">
-                        <a href="/recipient-wishlist.html" class="btn btn-primary">
-                            View Their Wish List 📝
-                        </a>
-                        <a href="/wishlist.html" class="btn btn-secondary">
-                            Edit My Wish List ✏️
-                        </a>
-                        <a href="/preferences.html" class="btn btn-secondary">
-                            Notification Settings ⚙️
-                        </a>
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="info"></i></div>
+                            <h2 class="widget-title">How It Works</h2>
+                        </div>
+                        <div class="widget-body" style="font-size: 0.875rem; color: #666; line-height: 1.6;">
+                            <p style="margin-bottom: 0.5rem;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> Click "Draw Your Secret Santa"</p>
+                            <p style="margin-bottom: 0.5rem;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> View their wish list</p>
+                            <p style="margin-bottom: 0.5rem;"><i data-lucide="check" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> Shop for their gift</p>
+                            <p><i data-lucide="check" style="width: 14px; height: 14px; color: var(--christmas-green); vertical-align: middle;"></i> Keep it secret!</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Error State -->
-                <div id="errorState" class="error-message" style="display: none;">
-                    <p id="errorMessage"></p>
+                <!-- Right Column - Draw Button -->
+                <div class="dashboard-main">
+                    <div class="widget text-center" style="padding: 4rem 2rem;">
+                        <div class="present-box">🎁</div>
+                        <h2 style="font-size: 2rem; margin-bottom: 1rem; color: var(--dark-text);">Ready to draw your Secret Santa?</h2>
+                        <p style="font-size: 1.1rem; color: #666; margin-bottom: 2rem;">Click the button below to find out who you're shopping for!</p>
+                        <button id="drawBtn" class="btn btn-primary btn-lg">
+                            <i data-lucide="shuffle"></i> Draw Your Secret Santa
+                        </button>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <div class="card-footer">
-                <button id="logoutBtn" class="btn btn-text">Logout</button>
+        <!-- Assignment Revealed State -->
+        <div id="assignmentState" style="display: none;">
+            <div class="dashboard-container">
+                <!-- Left Column - Assignment Info -->
+                <div class="dashboard-sidebar">
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="user"></i></div>
+                            <h2 class="widget-title">Welcome!</h2>
+                        </div>
+                        <div class="widget-body">
+                            <p style="font-size: 1.1rem; font-weight: 500; color: var(--dark-text); margin-bottom: 0.5rem;">
+                                <span id="userName2"></span>
+                            </p>
+                            <p style="font-size: 0.875rem; color: #666;">
+                                You've drawn your Secret Santa!
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="calendar"></i></div>
+                            <h2 class="widget-title">Event Details</h2>
+                        </div>
+                        <div class="widget-body" id="eventDetailsWidget">
+                            <p style="font-size: 0.875rem; color: #666;">Loading event details...</p>
+                        </div>
+                    </div>
+
+                    <div class="widget-compact">
+                        <div class="widget-header">
+                            <div class="widget-icon"><i data-lucide="navigation"></i></div>
+                            <h2 class="widget-title">Quick Links</h2>
+                        </div>
+                        <div class="widget-body" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="/wishlist.html" class="btn btn-secondary btn-sm" style="width: 100%;">
+                                <i data-lucide="list"></i> Edit My Wish List
+                            </a>
+                            <a href="/preferences.html" class="btn btn-secondary btn-sm" style="width: 100%;">
+                                <i data-lucide="settings"></i> Settings
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Assignment Reveal -->
+                <div class="dashboard-main">
+                    <div class="widget text-center" style="padding: 4rem 2rem;">
+                        <div class="reveal-animation">
+                            <div class="gift-icon">🎁</div>
+                            <h2 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--dark-text);">You're shopping for...</h2>
+                            <div class="recipient-name" id="recipientName"></div>
+                            <p class="secret-reminder" style="margin-top: 1.5rem; font-size: 1.25rem;"><i data-lucide="lock" style="width: 20px; height: 20px; vertical-align: middle;"></i> Keep it secret! <i data-lucide="lock" style="width: 20px; height: 20px; vertical-align: middle;"></i></p>
+                        </div>
+
+                        <div style="margin-top: 3rem;">
+                            <a href="/recipient-wishlist.html" class="btn btn-primary btn-lg">
+                                <i data-lucide="clipboard-list"></i> View Their Wish List
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -75,5 +151,9 @@
     <script src="/js/main.js"></script>
     <script src="/js/snowfall.js"></script>
     <script src="/js/assignment.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

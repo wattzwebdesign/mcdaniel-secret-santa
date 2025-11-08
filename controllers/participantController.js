@@ -1,3 +1,4 @@
+const db = require('../config/database');
 const assignmentService = require('../services/assignmentService');
 
 // Get current assignment
@@ -64,8 +65,28 @@ async function canPick(req, res) {
     }
 }
 
+// Get event details
+async function getEventDetails(req, res) {
+    try {
+        const sql = 'SELECT * FROM event_settings LIMIT 1';
+        const results = await db.query(sql);
+
+        res.json({
+            success: true,
+            eventSettings: results.length > 0 ? results[0] : null
+        });
+    } catch (error) {
+        console.error('Get event details error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching event details'
+        });
+    }
+}
+
 module.exports = {
     getAssignment,
     drawAssignment,
-    canPick
+    canPick,
+    getEventDetails
 };

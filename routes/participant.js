@@ -15,4 +15,7 @@ router.post('/draw', participantController.drawAssignment);
 // GET /api/participant/can-pick - Check if eligible to pick
 router.get('/can-pick', participantController.canPick);
 
+// GET /api/participant/event-details - Get event settings
+router.get('/event-details', participantController.getEventDetails);
+
 module.exports = router;
