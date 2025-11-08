@@ -73,6 +73,50 @@ async function addParticipant(req, res) {
     }
 }
 
+// Update participant
+async function updateParticipant(req, res) {
+    try {
+        const participantId = parseInt(req.params.id);
+        const { firstName, phoneNumber } = req.body;
+
+        const formattedPhone = twilioService.formatPhoneNumber(phoneNumber);
+        const lastFour = twilioService.extractLastFour(formattedPhone);
+
+        const sql = `
+            UPDATE participants
+            SET first_name = ?, phone_number = ?, phone_last_four = ?
+            WHERE id = ?
+        `;
+
+        const result = await db.query(sql, [firstName, formattedPhone, lastFour, participantId]);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Participant not found'
+            });
+        }
+
+        res.json({
+            success: true,
+            message: 'Participant updated successfully'
+        });
+    } catch (error) {
+        if (error.code === 'ER_DUP_ENTRY') {
+            return res.status(400).json({
+                success: false,
+                message: 'This phone number is already in use'
+            });
+        }
+
+        console.error('Update participant error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating participant'
+        });
+    }
+}
+
 // Remove participant
 async function removeParticipant(req, res) {
     try {
@@ -645,6 +689,7 @@ async function updateSMSTemplate(req, res) {
 module.exports = {
     getParticipants,
     addParticipant,
+    updateParticipant,
     removeParticipant,
     getExclusions,
     addExclusion,

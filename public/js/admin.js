@@ -52,7 +52,7 @@ async function loadGameStatus() {
         const statusHtml = `
             <div class="stat-card">
                 <div class="stat-value">${data.totalParticipants}</div>
-                <div class="stat-label">Total Participants</div>
+                <div class="stat-label">Participants</div>
             </div>
             <div class="stat-card">
                 <div class="stat-value">${data.pickedCount}</div>
@@ -97,20 +97,28 @@ function renderParticipants() {
     }
 
     container.innerHTML = participants.map(p => `
-        <div class="participant-item">
+        <div class="participant-item" data-participant-id="${p.id}">
             <div class="participant-info">
                 <div class="participant-name">${escapeHtml(p.first_name)}
                     <span class="status-badge ${p.has_picked ? 'status-picked' : 'status-not-picked'}">
-                        ${p.has_picked ? '✅ Picked' : '⏳ Not Picked'}
+                        ${p.has_picked ? 'Picked' : 'Not Picked'}
                     </span>
                 </div>
                 <div class="participant-meta">
                     Last 4: ${p.phone_last_four} | SMS: ${p.sms_enabled ? 'On' : 'Off'}
                 </div>
             </div>
-            <button class="btn btn-sm btn-danger" onclick="removeParticipant(${p.id})">Remove</button>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn btn-sm btn-secondary" onclick="editParticipant(${p.id})"><i data-lucide="edit-2"></i></button>
+                <button class="btn btn-sm btn-danger" onclick="removeParticipant(${p.id})"><i data-lucide="trash-2"></i></button>
+            </div>
         </div>
     `).join('');
+
+    // Re-initialize icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 async function addParticipant(e) {
@@ -133,6 +141,79 @@ async function addParticipant(e) {
             await loadGameStatus();
         } else {
             alert(data.message || 'Failed to add participant');
+        }
+    } catch (error) {
+        alert('An error occurred');
+    }
+}
+
+async function editParticipant(id) {
+    const participant = participants.find(p => p.id === id);
+    if (!participant) return;
+
+    // Create inline edit mode for this participant
+    const participantItem = document.querySelector(`.participant-item[data-participant-id="${id}"]`);
+    if (!participantItem) return;
+
+    const originalContent = participantItem.innerHTML;
+
+    participantItem.innerHTML = `
+        <div class="participant-edit-form" style="flex: 1; display: flex; gap: 0.5rem; align-items: center;">
+            <input type="text" id="edit_firstName_${id}" value="${escapeHtml(participant.first_name)}" style="flex: 1; padding: 0.5rem; border: 2px solid var(--christmas-green); border-radius: 6px; font-size: 0.95rem;">
+            <input type="tel" id="edit_phoneNumber_${id}" value="${participant.phone_number}" placeholder="Phone Number" style="flex: 1; padding: 0.5rem; border: 2px solid var(--christmas-green); border-radius: 6px; font-size: 0.95rem;">
+        </div>
+        <div style="display: flex; gap: 0.5rem;">
+            <button class="btn btn-sm btn-success" onclick="saveParticipantEdit(${id})">
+                <i data-lucide="check"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary" onclick="cancelParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+    `;
+
+    // Re-initialize icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
+    // Focus on first name field
+    document.getElementById(`edit_firstName_${id}`).focus();
+}
+
+function cancelParticipantEdit(id, originalContent) {
+    const participantItem = document.querySelector(`.participant-item[data-participant-id="${id}"]`);
+    if (participantItem) {
+        participantItem.innerHTML = originalContent;
+        // Re-initialize icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+async function saveParticipantEdit(id) {
+    const firstName = document.getElementById(`edit_firstName_${id}`).value.trim();
+    const phoneNumber = document.getElementById(`edit_phoneNumber_${id}`).value.trim();
+
+    if (!firstName || !phoneNumber) {
+        alert('Please provide both first name and phone number');
+        return;
+    }
+
+    try {
+        const response = await api(`/api/admin/participants/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify({ firstName, phoneNumber })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            await loadParticipants();
+            await loadGameStatus();
+        } else {
+            alert(data.message || 'Failed to update participant');
         }
     } catch (error) {
         alert('An error occurred');
@@ -733,6 +814,9 @@ async function refreshSMSLogs() {
 }
 
 // Export functions for onclick handlers
+window.editParticipant = editParticipant;
+window.saveParticipantEdit = saveParticipantEdit;
+window.cancelParticipantEdit = cancelParticipantEdit;
 window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
 window.refreshSMSLogs = refreshSMSLogs;

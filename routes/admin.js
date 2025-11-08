@@ -15,6 +15,7 @@ router.use(requireAdmin);
 // Participant Management
 router.get('/participants', adminController.getParticipants);
 router.post('/participants', validateParticipant, adminController.addParticipant);
+router.put('/participants/:id', validateIdParam, validateParticipant, adminController.updateParticipant);
 router.delete('/participants/:id', validateIdParam, adminController.removeParticipant);
 
 // Exclusion Management
