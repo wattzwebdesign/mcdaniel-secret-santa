@@ -82,7 +82,8 @@ app.use(session({
         maxAge: 1000 * 60 * 60 * 24, // 24 hours
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-        sameSite: 'strict'
+        sameSite: 'lax',
+        domain: process.env.NODE_ENV === 'production' ? '.mcdanielfamilychristmas.com' : undefined
     }
 }));
 
