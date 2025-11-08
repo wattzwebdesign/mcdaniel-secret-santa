@@ -312,11 +312,10 @@ async function loadSMSTemplates() {
 
             html += `
                 <div class="sms-template-card">
-                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-red); font-size: 0.95rem;">${template.name}</h4>
-                    <p style="margin: 0 0 0.75rem 0; color: #666; font-size: 0.85rem;">${template.description}</p>
-                    <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; margin-bottom: 0.5rem; border: 1px solid #e0e0e0; max-height: 120px; overflow-y: auto; flex: 1;">
-${escapeHtml(template.preview)}</div>
-                    <div style="font-size: 0.75rem; color: #666; margin-top: auto;">
+                    <h4>${template.name}</h4>
+                    <p>${template.description}</p>
+                    <div class="sms-template-preview">${escapeHtml(template.preview)}</div>
+                    <div class="sms-template-footer">
                         <span class="badge ${badgeClass}">
                             ${template.length} chars • ${template.segments} seg
                         </span>
