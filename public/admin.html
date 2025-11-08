@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/snowfall.css">
     <link rel="stylesheet" href="/css/components.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <div class="snowfall"></div>
@@ -33,8 +34,8 @@
         <!-- Admin Panel -->
         <div id="adminPanel" style="display: none;">
             <div class="admin-header">
-                <h1 class="title christmas-title">🎅 Admin Dashboard</h1>
-                <button id="adminLogoutBtn" class="btn btn-secondary">Logout</button>
+                <h1 class="title christmas-title"><i data-lucide="layout-dashboard"></i> Admin Dashboard</h1>
+                <button id="adminLogoutBtn" class="btn btn-secondary"><i data-lucide="log-out"></i> Logout</button>
             </div>
 
             <div class="dashboard-container">
@@ -44,27 +45,27 @@
                     <!-- Game Status Widget -->
                     <div class="widget-compact">
                         <div class="widget-header">
-                            <div class="widget-icon">📊</div>
+                            <div class="widget-icon"><i data-lucide="bar-chart-3"></i></div>
                             <h2 class="widget-title">Game Status</h2>
                         </div>
                         <div class="widget-body">
                             <div id="gameStatus" class="stats-grid"></div>
-                            <button id="refreshStatusBtn" class="btn btn-secondary btn-sm" style="margin-top: 1rem; width: 100%;">🔄 Refresh</button>
+                            <button id="refreshStatusBtn" class="btn btn-secondary btn-sm" style="margin-top: 1rem; width: 100%;"><i data-lucide="refresh-cw"></i> Refresh</button>
                         </div>
                     </div>
 
                     <!-- Notifications Widget -->
                     <div class="widget-compact">
                         <div class="widget-header">
-                            <div class="widget-icon">📤</div>
+                            <div class="widget-icon"><i data-lucide="send"></i></div>
                             <h2 class="widget-title">Send Notifications</h2>
                         </div>
                         <div class="widget-body">
                             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                <button id="sendGameStartBtn" class="btn btn-primary btn-sm">🎅 Game Start</button>
-                                <button id="sendWishlistReminderBtn" class="btn btn-secondary btn-sm">📝 Wishlist</button>
-                                <button id="sendShoppingReminderBtn" class="btn btn-secondary btn-sm">🛒 Shopping</button>
-                                <button id="sendExchangeDayBtn" class="btn btn-primary btn-sm">🎉 Exchange Day</button>
+                                <button id="sendGameStartBtn" class="btn btn-primary btn-sm"><i data-lucide="play-circle"></i> Game Start</button>
+                                <button id="sendWishlistReminderBtn" class="btn btn-secondary btn-sm"><i data-lucide="list"></i> Wishlist</button>
+                                <button id="sendShoppingReminderBtn" class="btn btn-secondary btn-sm"><i data-lucide="shopping-cart"></i> Shopping</button>
+                                <button id="sendExchangeDayBtn" class="btn btn-primary btn-sm"><i data-lucide="gift"></i> Exchange Day</button>
                             </div>
                             <div id="smsStats" class="stats-grid" style="margin-top: 1rem;"></div>
                         </div>
@@ -73,14 +74,14 @@
                     <!-- Game Controls Widget -->
                     <div class="widget-compact">
                         <div class="widget-header">
-                            <div class="widget-icon">🎮</div>
+                            <div class="widget-icon"><i data-lucide="settings"></i></div>
                             <h2 class="widget-title">Game Controls</h2>
                         </div>
                         <div class="widget-body">
                             <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                                <button id="validateGameBtn" class="btn btn-secondary btn-sm">✅ Validate</button>
-                                <button id="resetAssignmentsBtn" class="btn btn-warning btn-sm">🔄 Reset</button>
-                                <button id="resetAllBtn" class="btn btn-danger btn-sm">⚠️ Clear All</button>
+                                <button id="validateGameBtn" class="btn btn-secondary btn-sm"><i data-lucide="check-circle"></i> Validate</button>
+                                <button id="resetAssignmentsBtn" class="btn btn-warning btn-sm"><i data-lucide="rotate-ccw"></i> Reset</button>
+                                <button id="resetAllBtn" class="btn btn-danger btn-sm"><i data-lucide="trash-2"></i> Clear All</button>
                             </div>
                         </div>
                     </div>
@@ -93,7 +94,7 @@
                     <!-- Participant Management Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">👥</div>
+                            <div class="widget-icon"><i data-lucide="users"></i></div>
                             <h2 class="widget-title">Participants</h2>
                         </div>
                         <div class="widget-body">
@@ -105,7 +106,7 @@
                                     <div class="form-group">
                                         <input type="tel" id="newPhoneNumber" placeholder="Phone Number" required>
                                     </div>
-                                    <button type="submit" class="btn btn-primary">➕ Add</button>
+                                    <button type="submit" class="btn btn-primary"><i data-lucide="user-plus"></i> Add</button>
                                 </div>
                             </form>
                             <div id="participantsList" class="data-table data-table-scrollable"></div>
@@ -115,7 +116,7 @@
                     <!-- Exclusion Rules Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">🚫</div>
+                            <div class="widget-icon"><i data-lucide="shield-ban"></i></div>
                             <h2 class="widget-title">Exclusion Rules</h2>
                         </div>
                         <div class="widget-body">
@@ -129,15 +130,15 @@
                                         <option value="">Select Person</option>
                                     </select>
                                     <input type="text" id="exclusionReason" placeholder="Reason (e.g., spouse)">
-                                    <button type="submit" class="btn btn-primary">➕ Add Rule</button>
+                                    <button type="submit" class="btn btn-primary"><i data-lucide="plus"></i> Add Rule</button>
                                 </div>
                             </form>
                             <div id="exclusionsList" class="data-table data-table-scrollable"></div>
-                            <h3 style="margin: 1.5rem 0 1rem 0; color: var(--dark-text);">👨‍👩‍👧‍👦 Family Group Quick-Add</h3>
+                            <h3 style="margin: 1.5rem 0 1rem 0; color: var(--dark-text);"><i data-lucide="home" style="width: 18px; height: 18px; vertical-align: middle;"></i> Family Group Quick-Add</h3>
                             <form id="addFamilyGroupForm" class="admin-form">
                                 <div id="familyGroupSelector"></div>
                                 <input type="text" id="familyReason" placeholder="Reason (e.g., family)" value="family">
-                                <button type="submit" class="btn btn-primary">Add Family Exclusions</button>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="users-2"></i> Add Family Exclusions</button>
                             </form>
                         </div>
                     </div>
@@ -145,7 +146,7 @@
                     <!-- SMS Templates Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">📱</div>
+                            <div class="widget-icon"><i data-lucide="smartphone"></i></div>
                             <h2 class="widget-title">SMS Templates & Preview</h2>
                         </div>
                         <div class="widget-body">
@@ -156,18 +157,18 @@
                     <!-- SMS Logs & Queue Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">📋</div>
+                            <div class="widget-icon"><i data-lucide="clipboard-list"></i></div>
                             <h2 class="widget-title">SMS Logs & Message Queue</h2>
                         </div>
                         <div class="widget-body">
                             <div style="margin-bottom: 1rem;">
-                                <button id="refreshLogsBtn" class="btn btn-secondary btn-sm">🔄 Refresh Logs</button>
+                                <button id="refreshLogsBtn" class="btn btn-secondary btn-sm"><i data-lucide="refresh-cw"></i> Refresh Logs</button>
                             </div>
 
-                            <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;">⏳ Pending Messages (Queue)</h3>
+                            <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;"><i data-lucide="clock" style="width: 16px; height: 16px; vertical-align: middle;"></i> Pending Messages (Queue)</h3>
                             <div id="smsQueueList" style="margin-bottom: 2rem;"></div>
 
-                            <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;">📨 Sent Messages (History)</h3>
+                            <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;"><i data-lucide="mail-check" style="width: 16px; height: 16px; vertical-align: middle;"></i> Sent Messages (History)</h3>
                             <div id="smsSentList"></div>
                         </div>
                     </div>
@@ -175,7 +176,7 @@
                     <!-- Exchange Event Settings Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">🎄</div>
+                            <div class="widget-icon"><i data-lucide="calendar"></i></div>
                             <h2 class="widget-title">Exchange Event Settings</h2>
                         </div>
                         <div class="widget-body">
@@ -196,7 +197,7 @@
                                     <label for="exchangeLocation">Location/Address</label>
                                     <textarea id="exchangeLocation" rows="3" placeholder="e.g., 123 Main St, City, State 12345"></textarea>
                                 </div>
-                                <button type="submit" class="btn btn-primary">💾 Save Settings</button>
+                                <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Settings</button>
                             </form>
                         </div>
                     </div>
@@ -204,7 +205,7 @@
                     <!-- SMS Template Editor Widget -->
                     <div class="widget">
                         <div class="widget-header">
-                            <div class="widget-icon">✉️</div>
+                            <div class="widget-icon"><i data-lucide="mail"></i></div>
                             <h2 class="widget-title">Edit SMS Templates</h2>
                         </div>
                         <div class="widget-body">
@@ -220,5 +221,18 @@
     <script src="/js/main.js"></script>
     <script src="/js/snowfall.js"></script>
     <script src="/js/admin.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Re-initialize icons when admin panel is shown or data is updated
+        const originalShowElement = window.showElement;
+        if (originalShowElement) {
+            window.showElement = function(elementId) {
+                originalShowElement(elementId);
+                setTimeout(() => lucide.createIcons(), 100);
+            };
+        }
+    </script>
 </body>
 </html>

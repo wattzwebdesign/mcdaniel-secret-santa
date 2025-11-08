@@ -434,6 +434,14 @@
     border-radius: 8px;
 }
 
+.widget-icon i,
+.widget-icon svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+    stroke-width: 2.5;
+}
+
 .widget-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -665,8 +673,42 @@
     font-size: 1.2rem;
 }
 
+.widget-compact .widget-icon i,
+.widget-compact .widget-icon svg {
+    width: 16px;
+    height: 16px;
+}
+
 .widget-compact .widget-title {
     font-size: 0.95rem;
+}
+
+/* Icon styles for buttons and inline text */
+.btn i,
+.btn svg {
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    margin-right: 0.35rem;
+}
+
+.btn-sm i,
+.btn-sm svg {
+    width: 14px;
+    height: 14px;
+}
+
+.christmas-title i,
+.christmas-title svg {
+    width: 28px;
+    height: 28px;
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+h3 i,
+h3 svg {
+    margin-right: 0.35rem;
 }
 
 /* Responsive */
