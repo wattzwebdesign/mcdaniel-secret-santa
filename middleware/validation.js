@@ -26,7 +26,7 @@ const isValidPhoneNumber = (value) => {
     }
 };
 
-// Validation rules for login
+// Validation rules for login (accepts last 4 digits OR full phone number)
 const validateLogin = [
     body('firstName')
         .trim()
@@ -36,7 +36,14 @@ const validateLogin = [
     body('phoneNumber')
         .trim()
         .notEmpty().withMessage('Phone number is required')
-        .custom(isValidPhoneNumber).withMessage('Invalid phone number format'),
+        .custom((value) => {
+            // Accept either 4 digits or full phone number
+            const cleaned = value.replace(/\D/g, '');
+            if (cleaned.length === 4 && /^\d{4}$/.test(cleaned)) {
+                return true; // Last 4 digits
+            }
+            return isValidPhoneNumber(value); // Full phone number
+        }).withMessage('Enter last 4 digits of phone number'),
     validate
 ];
 
