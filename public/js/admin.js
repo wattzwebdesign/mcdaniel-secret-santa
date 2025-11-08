@@ -167,8 +167,8 @@ async function editParticipant(id) {
             <button class="btn btn-sm btn-success" onclick="saveParticipantEdit(${id})">
                 <i data-lucide="check"></i>
             </button>
-            <button class="btn btn-sm btn-secondary" onclick="cancelParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
-                <i data-lucide="x" style="color: white;"></i>
+            <button class="btn btn-sm btn-secondary" onclick="cancelParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\\\`')}\`)">
+                <i data-lucide="x" style="stroke: white; color: white;"></i>
             </button>
         </div>
     `;
@@ -467,8 +467,8 @@ async function editNonParticipant(id) {
             <button class="btn btn-sm btn-success" onclick="saveNonParticipantEdit(${id})">
                 <i data-lucide="check"></i>
             </button>
-            <button class="btn btn-sm btn-secondary" onclick="cancelNonParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\`')}\`)">
-                <i data-lucide="x" style="color: white;"></i>
+            <button class="btn btn-sm btn-secondary" onclick="cancelNonParticipantEdit(${id}, \`${escapeHtml(originalContent).replace(/`/g, '\\\\`')}\`)">
+                <i data-lucide="x" style="stroke: white; color: white;"></i>
             </button>
         </div>
     `;
