@@ -33,27 +33,29 @@
         <!-- Admin Panel -->
         <div id="adminPanel" style="display: none;">
             <div class="admin-header">
-                <h1 class="title christmas-title">Admin Control Panel</h1>
+                <h1 class="title christmas-title">🎅 Admin Dashboard</h1>
                 <button id="adminLogoutBtn" class="btn btn-secondary">Logout</button>
             </div>
 
-            <!-- Game Status -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>📊 Game Status</h2>
+            <!-- Game Status Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📊</div>
+                    <h2 class="widget-title">Game Status</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div id="gameStatus" class="stats-grid"></div>
-                    <button id="refreshStatusBtn" class="btn btn-secondary">Refresh Status</button>
+                    <button id="refreshStatusBtn" class="btn btn-secondary" style="margin-top: 1rem;">🔄 Refresh Status</button>
                 </div>
             </div>
 
-            <!-- Participant Management -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>👥 Participants</h2>
+            <!-- Participant Management Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">👥</div>
+                    <h2 class="widget-title">Participants</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <form id="addParticipantForm" class="admin-form">
                         <div class="form-row">
                             <div class="form-group">
@@ -62,19 +64,20 @@
                             <div class="form-group">
                                 <input type="tel" id="newPhoneNumber" placeholder="Phone Number" required>
                             </div>
-                            <button type="submit" class="btn btn-primary">Add Participant</button>
+                            <button type="submit" class="btn btn-primary">➕ Add</button>
                         </div>
                     </form>
                     <div id="participantsList" class="data-table"></div>
                 </div>
             </div>
 
-            <!-- Exclusion Rules -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>🚫 Exclusion Rules</h2>
+            <!-- Exclusion Rules Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🚫</div>
+                    <h2 class="widget-title">Exclusion Rules</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <form id="addExclusionForm" class="admin-form">
                         <div class="form-row">
                             <select id="exclusionParticipant" required>
@@ -85,12 +88,12 @@
                                 <option value="">Select Person</option>
                             </select>
                             <input type="text" id="exclusionReason" placeholder="Reason (e.g., spouse)">
-                            <button type="submit" class="btn btn-primary">Add Rule</button>
+                            <button type="submit" class="btn btn-primary">➕ Add Rule</button>
                         </div>
                     </form>
                     <div id="exclusionsList" class="data-table"></div>
-                    <h3>Family Group Quick-Add</h3>
-                    <form id="addFamilyGroupForm">
+                    <h3 style="margin: 1.5rem 0 1rem 0; color: var(--dark-text);">👨‍👩‍👧‍👦 Family Group Quick-Add</h3>
+                    <form id="addFamilyGroupForm" class="admin-form">
                         <div id="familyGroupSelector"></div>
                         <input type="text" id="familyReason" placeholder="Reason (e.g., family)" value="family">
                         <button type="submit" class="btn btn-primary">Add Family Exclusions</button>
@@ -98,56 +101,60 @@
                 </div>
             </div>
 
-            <!-- SMS Templates -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>📱 SMS Templates & Preview</h2>
+            <!-- SMS Templates Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📱</div>
+                    <h2 class="widget-title">SMS Templates & Preview</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div id="smsTemplatesContainer"></div>
                 </div>
             </div>
 
-            <!-- Notifications -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>📤 Send Notifications</h2>
+            <!-- Notifications Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📤</div>
+                    <h2 class="widget-title">Send Notifications</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div class="btn-group">
-                        <button id="sendGameStartBtn" class="btn btn-primary">Send Game Start 🎅</button>
-                        <button id="sendWishlistReminderBtn" class="btn btn-secondary">Send Wishlist Reminder 📝</button>
-                        <button id="sendShoppingReminderBtn" class="btn btn-secondary">Send Shopping Reminder 🛒</button>
-                        <button id="sendExchangeDayBtn" class="btn btn-primary">Send Exchange Day 🎉</button>
+                        <button id="sendGameStartBtn" class="btn btn-primary">🎅 Game Start</button>
+                        <button id="sendWishlistReminderBtn" class="btn btn-secondary">📝 Wishlist Reminder</button>
+                        <button id="sendShoppingReminderBtn" class="btn btn-secondary">🛒 Shopping Reminder</button>
+                        <button id="sendExchangeDayBtn" class="btn btn-primary">🎉 Exchange Day</button>
                     </div>
                     <div id="smsStats" class="stats-grid"></div>
                 </div>
             </div>
 
-            <!-- SMS Logs & Queue -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>📋 SMS Logs & Message Queue</h2>
+            <!-- SMS Logs & Queue Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">📋</div>
+                    <h2 class="widget-title">SMS Logs & Message Queue</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div style="margin-bottom: 1rem;">
                         <button id="refreshLogsBtn" class="btn btn-secondary btn-sm">🔄 Refresh Logs</button>
                     </div>
 
-                    <h3 style="margin-bottom: 0.5rem;">Pending Messages (Queue)</h3>
+                    <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;">⏳ Pending Messages (Queue)</h3>
                     <div id="smsQueueList" style="margin-bottom: 2rem;"></div>
 
-                    <h3 style="margin-bottom: 0.5rem;">Sent Messages (History)</h3>
+                    <h3 style="margin: 1.5rem 0 0.75rem 0; color: var(--dark-text); font-size: 1rem;">📨 Sent Messages (History)</h3>
                     <div id="smsSentList"></div>
                 </div>
             </div>
 
-            <!-- Exchange Event Settings -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>🎄 Exchange Event Settings</h2>
+            <!-- Exchange Event Settings Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🎄</div>
+                    <h2 class="widget-title">Exchange Event Settings</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <form id="eventSettingsForm">
                         <div class="form-group">
                             <label for="exchangeTitle">Event Title</label>
@@ -165,31 +172,33 @@
                             <label for="exchangeLocation">Location/Address</label>
                             <textarea id="exchangeLocation" rows="3" placeholder="e.g., 123 Main St, City, State 12345"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Save Event Settings</button>
+                        <button type="submit" class="btn btn-primary">💾 Save Settings</button>
                     </form>
                 </div>
             </div>
 
-            <!-- SMS Template Editor -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>✉️ Edit SMS Templates</h2>
+            <!-- SMS Template Editor Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">✉️</div>
+                    <h2 class="widget-title">Edit SMS Templates</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div id="smsTemplateEditor"></div>
                 </div>
             </div>
 
-            <!-- Game Controls -->
-            <div class="card">
-                <div class="card-header">
-                    <h2>🎮 Game Controls</h2>
+            <!-- Game Controls Widget -->
+            <div class="widget">
+                <div class="widget-header">
+                    <div class="widget-icon">🎮</div>
+                    <h2 class="widget-title">Game Controls</h2>
                 </div>
-                <div class="card-body">
+                <div class="widget-body">
                     <div class="btn-group">
-                        <button id="validateGameBtn" class="btn btn-secondary">Validate Game</button>
-                        <button id="resetAssignmentsBtn" class="btn btn-warning">Reset Assignments</button>
-                        <button id="resetAllBtn" class="btn btn-danger">Clear All Data</button>
+                        <button id="validateGameBtn" class="btn btn-secondary">✅ Validate Game</button>
+                        <button id="resetAssignmentsBtn" class="btn btn-warning">🔄 Reset Assignments</button>
+                        <button id="resetAllBtn" class="btn btn-danger">⚠️ Clear All Data</button>
                     </div>
                 </div>
             </div>

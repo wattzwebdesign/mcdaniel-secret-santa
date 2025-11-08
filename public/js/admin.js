@@ -605,13 +605,13 @@ function renderSMSQueue(queue) {
         return;
     }
 
-    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; color: white;">';
-    html += '<thead><tr style="background: rgba(255,255,255,0.1);">';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Participant</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Type</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Message Preview</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Priority</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Scheduled</th>';
+    let html = '<div class="data-table"><table>';
+    html += '<thead><tr>';
+    html += '<th>Participant</th>';
+    html += '<th>Type</th>';
+    html += '<th>Message Preview</th>';
+    html += '<th>Priority</th>';
+    html += '<th>Scheduled</th>';
     html += '</tr></thead><tbody>';
 
     queue.forEach(msg => {
@@ -619,12 +619,12 @@ function renderSMSQueue(queue) {
         const scheduledDate = new Date(msg.scheduled_for);
         const formattedDate = scheduledDate.toLocaleString();
 
-        html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
-        html += `<td style="padding: 0.75rem;">${escapeHtml(msg.first_name)}</td>`;
-        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: rgba(76, 175, 80, 0.3); border-radius: 4px; font-size: 0.85rem;">${escapeHtml(msg.message_type)}</span></td>`;
-        html += `<td style="padding: 0.75rem; max-width: 300px;">${escapeHtml(preview)}</td>`;
-        html += `<td style="padding: 0.75rem; text-align: center;">${msg.priority}</td>`;
-        html += `<td style="padding: 0.75rem; font-size: 0.9rem;">${formattedDate}</td>`;
+        html += '<tr>';
+        html += `<td><strong>${escapeHtml(msg.first_name)}</strong></td>`;
+        html += `<td><span class="badge badge-info">${escapeHtml(msg.message_type)}</span></td>`;
+        html += `<td style="max-width: 300px;">${escapeHtml(preview)}</td>`;
+        html += `<td style="text-align: center;"><span class="badge badge-warning">${msg.priority}</span></td>`;
+        html += `<td style="font-size: 0.9rem; white-space: nowrap;">${formattedDate}</td>`;
         html += '</tr>';
     });
 
@@ -641,13 +641,13 @@ function renderSMSSentLogs(logs) {
         return;
     }
 
-    let html = '<div style="overflow-x: auto;"><table style="width: 100%; border-collapse: collapse; color: white;">';
-    html += '<thead><tr style="background: rgba(255,255,255,0.1);">';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Participant</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Type</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Message Preview</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Status</th>';
-    html += '<th style="padding: 0.75rem; text-align: left; border-bottom: 2px solid rgba(255,255,255,0.2);">Sent</th>';
+    let html = '<div class="data-table"><table>';
+    html += '<thead><tr>';
+    html += '<th>Participant</th>';
+    html += '<th>Type</th>';
+    html += '<th>Message Preview</th>';
+    html += '<th>Status</th>';
+    html += '<th>Sent</th>';
     html += '</tr></thead><tbody>';
 
     logs.forEach(log => {
@@ -655,27 +655,27 @@ function renderSMSSentLogs(logs) {
         const sentDate = new Date(log.sent_at);
         const formattedDate = sentDate.toLocaleString();
 
-        let statusColor = 'rgba(76, 175, 80, 0.3)'; // green for delivered
+        let badgeClass = 'badge-success'; // green for delivered
         let statusText = log.status;
 
         if (log.status === 'failed') {
-            statusColor = 'rgba(244, 67, 54, 0.3)'; // red for failed
+            badgeClass = 'badge-danger'; // red for failed
         } else if (log.status === 'sent' || log.status === 'queued') {
-            statusColor = 'rgba(255, 193, 7, 0.3)'; // yellow for pending
+            badgeClass = 'badge-warning'; // yellow for pending
         }
 
-        html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
-        html += `<td style="padding: 0.75rem;">${escapeHtml(log.first_name)}</td>`;
-        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: rgba(33, 150, 243, 0.3); border-radius: 4px; font-size: 0.85rem;">${escapeHtml(log.message_type)}</span></td>`;
-        html += `<td style="padding: 0.75rem; max-width: 300px;">${escapeHtml(preview)}</td>`;
-        html += `<td style="padding: 0.75rem;"><span style="padding: 0.25rem 0.5rem; background: ${statusColor}; border-radius: 4px; font-size: 0.85rem;">${escapeHtml(statusText)}</span></td>`;
-        html += `<td style="padding: 0.75rem; font-size: 0.9rem;">${formattedDate}</td>`;
+        html += '<tr>';
+        html += `<td><strong>${escapeHtml(log.first_name)}</strong></td>`;
+        html += `<td><span class="badge badge-info">${escapeHtml(log.message_type)}</span></td>`;
+        html += `<td style="max-width: 300px;">${escapeHtml(preview)}</td>`;
+        html += `<td><span class="badge ${badgeClass}">${escapeHtml(statusText)}</span></td>`;
+        html += `<td style="font-size: 0.9rem; white-space: nowrap;">${formattedDate}</td>`;
         html += '</tr>';
 
         // Show error message if failed
         if (log.status === 'failed' && log.error_message) {
-            html += '<tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">';
-            html += `<td colspan="5" style="padding: 0.5rem 0.75rem; background: rgba(244, 67, 54, 0.1); font-size: 0.85rem; color: rgba(255,255,255,0.7);">Error: ${escapeHtml(log.error_message)}</td>`;
+            html += '<tr>';
+            html += `<td colspan="5" style="padding: 0.5rem 0.75rem; background: #f8d7da; font-size: 0.85rem; color: #721c24;"><strong>Error:</strong> ${escapeHtml(log.error_message)}</td>`;
             html += '</tr>';
         }
     });
