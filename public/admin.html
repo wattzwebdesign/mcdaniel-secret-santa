@@ -147,10 +147,14 @@
                     <div class="widget">
                         <div class="widget-header">
                             <div class="widget-icon"><i data-lucide="smartphone"></i></div>
-                            <h2 class="widget-title">SMS Templates & Preview</h2>
+                            <h2 class="widget-title">SMS Templates</h2>
                         </div>
                         <div class="widget-body">
                             <div id="smsStatusBadge" style="margin-bottom: 1rem;"></div>
+                            <p style="margin-bottom: 1rem; color: #666; font-size: 0.9rem;">
+                                <i data-lucide="info" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+                                Available variables: <code>{appUrl}</code>, <code>{recipientName}</code>, <code>{firstName}</code>, <code>{daysRemaining}</code>
+                            </p>
                             <div id="smsTemplatesContainer" class="sms-templates-grid"></div>
                         </div>
                     </div>
@@ -200,17 +204,6 @@
                                 </div>
                                 <button type="submit" class="btn btn-primary"><i data-lucide="save"></i> Save Settings</button>
                             </form>
-                        </div>
-                    </div>
-
-                    <!-- SMS Template Editor Widget -->
-                    <div class="widget">
-                        <div class="widget-header">
-                            <div class="widget-icon"><i data-lucide="mail"></i></div>
-                            <h2 class="widget-title">Edit SMS Templates</h2>
-                        </div>
-                        <div class="widget-body">
-                            <div id="smsTemplateEditor"></div>
                         </div>
                     </div>
 

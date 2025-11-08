@@ -38,7 +38,6 @@ async function loadAdminData() {
         loadSMSTemplates(),
         loadSMSStats(),
         loadEventSettings(),
-        loadEditableSMSTemplates(),
         loadSMSLogs()
     ]);
 }
@@ -291,12 +290,18 @@ async function addFamilyGroup(e) {
 
 async function loadSMSTemplates() {
     try {
-        const response = await api('/api/admin/notifications/templates');
-        const data = await response.json();
+        // Load preview templates
+        const previewResponse = await api('/api/admin/notifications/templates');
+        const previewData = await previewResponse.json();
 
-        if (!data.success) return;
+        // Load editable templates
+        const editableResponse = await api('/api/admin/settings/sms-templates');
+        const editableData = await editableResponse.json();
 
-        const { templates, smsEnabled } = data;
+        if (!previewData.success) return;
+
+        const { templates, smsEnabled } = previewData;
+        const editableTemplates = editableData.templates || [];
 
         const statusBadge = smsEnabled
             ? '<span class="badge badge-success">✓ SMS Enabled</span>'
@@ -311,8 +316,13 @@ async function loadSMSTemplates() {
             const badgeClass = template.isSingleSegment ? 'badge-success' : 'badge-warning';
             const cardId = `sms-template-${index}`;
 
+            // Find matching editable template
+            const editableTemplate = editableTemplates.find(t => t.template_type === template.type);
+            const templateId = editableTemplate ? editableTemplate.id : null;
+            const templateBody = editableTemplate ? editableTemplate.template_body : '';
+
             html += `
-                <div class="sms-template-card" id="${cardId}">
+                <div class="sms-template-card" id="${cardId}" data-template-id="${templateId}">
                     <div class="sms-template-header" onclick="toggleSMSTemplate('${cardId}')">
                         <div class="sms-template-title-area">
                             <h4>${template.name}</h4>
@@ -328,6 +338,23 @@ async function loadSMSTemplates() {
                     <div class="sms-template-content">
                         <div class="sms-template-content-inner">
                             <div class="sms-template-preview">${escapeHtml(template.preview)}</div>
+                            <div class="sms-template-edit-area">
+                                <textarea id="template_text_${templateId}">${escapeHtml(templateBody)}</textarea>
+                                <div class="sms-template-actions">
+                                    <button class="btn btn-primary btn-sm" onclick="saveTemplateInline('${cardId}', ${templateId})">
+                                        <i data-lucide="save"></i> Save
+                                    </button>
+                                    <button class="btn btn-secondary btn-sm" onclick="cancelTemplateEdit('${cardId}')">
+                                        <i data-lucide="x"></i> Cancel
+                                    </button>
+                                    <span class="sms-template-char-count" id="char_count_${templateId}"></span>
+                                </div>
+                            </div>
+                            <div class="sms-template-footer">
+                                <button class="btn btn-secondary btn-sm" onclick="editTemplateInline('${cardId}', ${templateId})">
+                                    <i data-lucide="edit"></i> Edit Template
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -336,12 +363,82 @@ async function loadSMSTemplates() {
 
         document.getElementById('smsTemplatesContainer').innerHTML = html;
 
+        // Initialize character counters
+        editableTemplates.forEach(template => {
+            const textarea = document.getElementById(`template_text_${template.id}`);
+            if (textarea) {
+                updateCharCount(template.id);
+                textarea.addEventListener('input', () => updateCharCount(template.id));
+            }
+        });
+
         // Re-initialize Lucide icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
     } catch (error) {
         console.error('Failed to load SMS templates:', error);
+    }
+}
+
+function updateCharCount(templateId) {
+    const textarea = document.getElementById(`template_text_${templateId}`);
+    const counter = document.getElementById(`char_count_${templateId}`);
+    if (textarea && counter) {
+        const length = textarea.value.length;
+        const segments = Math.ceil(length / 160);
+        const color = length <= 160 ? '#28a745' : '#ffc107';
+        counter.innerHTML = `<span style="color: ${color};">${length} chars • ${segments} segment${segments > 1 ? 's' : ''}</span>`;
+    }
+}
+
+function editTemplateInline(cardId, templateId) {
+    const card = document.getElementById(cardId);
+    if (card) {
+        card.classList.add('edit-mode');
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
+}
+
+function cancelTemplateEdit(cardId) {
+    const card = document.getElementById(cardId);
+    if (card) {
+        card.classList.remove('edit-mode');
+        // Reload to reset any changes
+        const templateId = card.dataset.templateId;
+        loadSMSTemplates();
+    }
+}
+
+async function saveTemplateInline(cardId, templateId) {
+    const textarea = document.getElementById(`template_text_${templateId}`);
+    if (!textarea) return;
+
+    const templateBody = textarea.value;
+
+    try {
+        const response = await api(`/api/admin/settings/sms-templates/${templateId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ template_body: templateBody })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Template saved successfully!');
+            const card = document.getElementById(cardId);
+            if (card) {
+                card.classList.remove('edit-mode');
+            }
+            // Reload to show updated preview
+            await loadSMSTemplates();
+        } else {
+            alert(data.message || 'Failed to save template');
+        }
+    } catch (error) {
+        alert('An error occurred while saving template');
     }
 }
 
@@ -518,83 +615,6 @@ async function saveEventSettings(e) {
     }
 }
 
-// Load editable SMS templates
-async function loadEditableSMSTemplates() {
-    try {
-        const response = await api('/api/admin/settings/sms-templates');
-        const data = await response.json();
-
-        if (!data.success) return;
-
-        const container = document.getElementById('smsTemplateEditor');
-        let html = '<p style="margin-bottom: 1rem; color: rgba(255,255,255,0.7);">Edit your SMS templates below. Available variables: {appUrl}, {recipientName}, {firstName}, {daysRemaining}, {eventTitle}, {eventTime}, {eventLocation}</p>';
-
-        data.templates.forEach(template => {
-            html += `
-                <div style="margin-bottom: 2rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-gold);">${escapeHtml(template.template_name)}</h4>
-                    <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">${escapeHtml(template.description)}</p>
-                    <form onsubmit="saveTemplate(event, ${template.id}); return false;">
-                        <textarea
-                            id="template_${template.id}"
-                            rows="6"
-                            style="width: 100%; padding: 0.75rem; border-radius: 4px; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); font-family: monospace; resize: vertical;"
-                        >${escapeHtml(template.template_body)}</textarea>
-                        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
-                            <button type="submit" class="btn btn-primary btn-sm">Save Template</button>
-                            <span id="chars_${template.id}" style="color: rgba(255,255,255,0.6); font-size: 0.85rem; align-self: center;"></span>
-                        </div>
-                    </form>
-                </div>
-            `;
-        });
-
-        container.innerHTML = html;
-
-        // Add character counters
-        data.templates.forEach(template => {
-            const textarea = document.getElementById(`template_${template.id}`);
-            const charCounter = document.getElementById(`chars_${template.id}`);
-
-            function updateCharCount() {
-                const length = textarea.value.length;
-                const segments = Math.ceil(length / 160);
-                const color = length <= 160 ? '#28a745' : '#ffc107';
-                charCounter.innerHTML = `<span style="color: ${color};">${length} chars • ${segments} segment${segments > 1 ? 's' : ''}</span>`;
-            }
-
-            textarea.addEventListener('input', updateCharCount);
-            updateCharCount();
-        });
-    } catch (error) {
-        console.error('Failed to load editable SMS templates:', error);
-    }
-}
-
-// Save SMS template
-async function saveTemplate(e, templateId) {
-    e.preventDefault();
-
-    const templateBody = document.getElementById(`template_${templateId}`).value;
-
-    try {
-        const response = await api(`/api/admin/settings/sms-templates/${templateId}`, {
-            method: 'PUT',
-            body: JSON.stringify({ template_body: templateBody })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            alert('Template saved successfully!');
-            await loadSMSTemplates(); // Reload preview
-        } else {
-            alert(data.message || 'Failed to save template');
-        }
-    } catch (error) {
-        alert('An error occurred while saving template');
-    }
-}
 
 // Load SMS logs and queue
 async function loadSMSLogs() {
@@ -715,6 +735,8 @@ async function refreshSMSLogs() {
 // Export functions for onclick handlers
 window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
-window.saveTemplate = saveTemplate;
 window.refreshSMSLogs = refreshSMSLogs;
 window.toggleSMSTemplate = toggleSMSTemplate;
+window.editTemplateInline = editTemplateInline;
+window.cancelTemplateEdit = cancelTemplateEdit;
+window.saveTemplateInline = saveTemplateInline;
