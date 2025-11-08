@@ -299,31 +299,31 @@ async function loadSMSTemplates() {
         const { templates, smsEnabled } = data;
 
         const statusBadge = smsEnabled
-            ? '<span style="color: #28a745; font-weight: bold;">✓ SMS Enabled</span>'
-            : '<span style="color: #ffc107; font-weight: bold;">⚠ SMS Disabled (Preview Only)</span>';
+            ? '<span class="badge badge-success">✓ SMS Enabled</span>'
+            : '<span class="badge badge-warning">⚠ SMS Disabled (Preview Only)</span>';
 
-        let html = `<div style="margin-bottom: 1rem;">${statusBadge}</div>`;
+        let html = `<div style="margin-bottom: 1rem;">${statusBadge}</div><div class="sms-templates-grid">`;
 
         Object.keys(templates).forEach(key => {
             const template = templates[key];
-            const segmentColor = template.isSingleSegment ? '#28a745' : '#ffc107';
+            const badgeClass = template.isSingleSegment ? 'badge-success' : 'badge-warning';
 
             html += `
-                <div style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
-                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-gold);">${template.name}</h4>
-                    <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">${template.description}</p>
-                    <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 4px; font-family: monospace; white-space: pre-wrap; margin-bottom: 0.5rem;">
+                <div class="sms-template-card">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-red); font-size: 0.95rem;">${template.name}</h4>
+                    <p style="margin: 0 0 0.75rem 0; color: #666; font-size: 0.85rem;">${template.description}</p>
+                    <div style="background: #f8f9fa; padding: 0.75rem; border-radius: 4px; font-family: monospace; font-size: 0.8rem; white-space: pre-wrap; margin-bottom: 0.5rem; border: 1px solid #e0e0e0; max-height: 120px; overflow-y: auto;">
 ${escapeHtml(template.preview)}</div>
-                    <div style="font-size: 0.85rem; color: rgba(255,255,255,0.6);">
-                        <span style="color: ${segmentColor};">
-                            ${template.length} characters • ${template.segments} SMS segment${template.segments > 1 ? 's' : ''}
+                    <div style="font-size: 0.75rem; color: #666;">
+                        <span class="badge ${badgeClass}">
+                            ${template.length} chars • ${template.segments} seg
                         </span>
-                        ${!template.isSingleSegment ? ' <span style="color: #ffc107;">⚠ Multi-segment (costs more)</span>' : ''}
                     </div>
                 </div>
             `;
         });
 
+        html += '</div>';
         document.getElementById('smsTemplatesContainer').innerHTML = html;
     } catch (error) {
         console.error('Failed to load SMS templates:', error);
