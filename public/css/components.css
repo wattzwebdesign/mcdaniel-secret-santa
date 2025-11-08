@@ -384,7 +384,8 @@
 .sms-templates-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    gap: 1.25rem;
+    grid-auto-rows: 1fr;
 }
 
 .sms-template-card {
@@ -393,6 +394,9 @@
     padding: 1rem;
     transition: all 0.3s ease;
     border: 1px solid #e0e0e0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .sms-template-card:hover {
