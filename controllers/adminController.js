@@ -494,6 +494,117 @@ async function getSMSTemplates(req, res) {
     }
 }
 
+// Get exchange event settings
+async function getEventSettings(req, res) {
+    try {
+        const settings = await db.query(
+            'SELECT config_key, config_value FROM admin_config WHERE config_key IN (?, ?, ?, ?)',
+            ['exchange_date', 'exchange_title', 'exchange_time', 'exchange_location']
+        );
+
+        const settingsObj = {};
+        settings.forEach(row => {
+            settingsObj[row.config_key] = row.config_value;
+        });
+
+        res.json({
+            success: true,
+            settings: settingsObj
+        });
+    } catch (error) {
+        console.error('Get event settings error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching event settings'
+        });
+    }
+}
+
+// Update exchange event settings
+async function updateEventSettings(req, res) {
+    try {
+        const { exchange_date, exchange_title, exchange_time, exchange_location } = req.body;
+
+        const updates = [
+            ['exchange_date', exchange_date],
+            ['exchange_title', exchange_title],
+            ['exchange_time', exchange_time],
+            ['exchange_location', exchange_location]
+        ];
+
+        for (const [key, value] of updates) {
+            if (value !== undefined) {
+                await db.query(
+                    'INSERT INTO admin_config (config_key, config_value) VALUES (?, ?) ON DUPLICATE KEY UPDATE config_value = ?',
+                    [key, value, value]
+                );
+            }
+        }
+
+        res.json({
+            success: true,
+            message: 'Event settings updated successfully'
+        });
+    } catch (error) {
+        console.error('Update event settings error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating event settings'
+        });
+    }
+}
+
+// Get editable SMS templates from database
+async function getEditableSMSTemplates(req, res) {
+    try {
+        const templates = await db.query(
+            'SELECT id, template_type, template_name, template_body, description FROM sms_templates ORDER BY id'
+        );
+
+        res.json({
+            success: true,
+            templates: templates || []
+        });
+    } catch (error) {
+        console.error('Get editable SMS templates error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while fetching SMS templates'
+        });
+    }
+}
+
+// Update SMS template
+async function updateSMSTemplate(req, res) {
+    try {
+        const { id } = req.params;
+        const { template_body } = req.body;
+
+        if (!template_body) {
+            return res.status(400).json({
+                success: false,
+                message: 'Template body is required'
+            });
+        }
+
+        await db.query(
+            'UPDATE sms_templates SET template_body = ? WHERE id = ?',
+            [template_body, id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Template updated successfully'
+        });
+    } catch (error) {
+        console.error('Update SMS template error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'An error occurred while updating template'
+        });
+    }
+}
+
 module.exports = {
     getParticipants,
     addParticipant,
@@ -510,5 +621,9 @@ module.exports = {
     sendReminder,
     getSMSLogs,
     getSMSStats,
-    getSMSTemplates
+    getSMSTemplates,
+    getEventSettings,
+    updateEventSettings,
+    getEditableSMSTemplates,
+    updateSMSTemplate
 };

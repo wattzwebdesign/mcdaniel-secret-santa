@@ -124,6 +124,44 @@
                 </div>
             </div>
 
+            <!-- Exchange Event Settings -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>🎄 Exchange Event Settings</h2>
+                </div>
+                <div class="card-body">
+                    <form id="eventSettingsForm">
+                        <div class="form-group">
+                            <label for="exchangeTitle">Event Title</label>
+                            <input type="text" id="exchangeTitle" placeholder="e.g., McDaniel Family Christmas Exchange">
+                        </div>
+                        <div class="form-group">
+                            <label for="exchangeDate">Exchange Date</label>
+                            <input type="date" id="exchangeDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exchangeTime">Exchange Time</label>
+                            <input type="time" id="exchangeTime" placeholder="e.g., 18:00">
+                        </div>
+                        <div class="form-group">
+                            <label for="exchangeLocation">Location/Address</label>
+                            <textarea id="exchangeLocation" rows="3" placeholder="e.g., 123 Main St, City, State 12345"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Event Settings</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- SMS Template Editor -->
+            <div class="card">
+                <div class="card-header">
+                    <h2>✉️ Edit SMS Templates</h2>
+                </div>
+                <div class="card-body">
+                    <div id="smsTemplateEditor"></div>
+                </div>
+            </div>
+
             <!-- Game Controls -->
             <div class="card">
                 <div class="card-header">

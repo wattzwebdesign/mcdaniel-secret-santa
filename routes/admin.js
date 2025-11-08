@@ -36,4 +36,10 @@ router.get('/notifications/logs', adminController.getSMSLogs);
 router.get('/notifications/stats', adminController.getSMSStats);
 router.get('/notifications/templates', adminController.getSMSTemplates);
 
+// Settings Management
+router.get('/settings/event', adminController.getEventSettings);
+router.put('/settings/event', adminController.updateEventSettings);
+router.get('/settings/sms-templates', adminController.getEditableSMSTemplates);
+router.put('/settings/sms-templates/:id', adminController.updateSMSTemplate);
+
 module.exports = router;

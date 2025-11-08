@@ -36,7 +36,9 @@ async function loadAdminData() {
         loadParticipants(),
         loadExclusions(),
         loadSMSTemplates(),
-        loadSMSStats()
+        loadSMSStats(),
+        loadEventSettings(),
+        loadEditableSMSTemplates()
     ]);
 }
 
@@ -441,8 +443,135 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('validateGameBtn').addEventListener('click', validateGame);
     document.getElementById('resetAssignmentsBtn').addEventListener('click', resetAssignments);
     document.getElementById('resetAllBtn').addEventListener('click', resetAll);
+    document.getElementById('eventSettingsForm').addEventListener('submit', saveEventSettings);
 });
+
+// Load event settings
+async function loadEventSettings() {
+    try {
+        const response = await api('/api/admin/settings/event');
+        const data = await response.json();
+
+        if (data.success) {
+            const settings = data.settings;
+            document.getElementById('exchangeTitle').value = settings.exchange_title || '';
+            document.getElementById('exchangeDate').value = settings.exchange_date || '';
+            document.getElementById('exchangeTime').value = settings.exchange_time || '';
+            document.getElementById('exchangeLocation').value = settings.exchange_location || '';
+        }
+    } catch (error) {
+        console.error('Failed to load event settings:', error);
+    }
+}
+
+// Save event settings
+async function saveEventSettings(e) {
+    e.preventDefault();
+
+    const settings = {
+        exchange_title: document.getElementById('exchangeTitle').value,
+        exchange_date: document.getElementById('exchangeDate').value,
+        exchange_time: document.getElementById('exchangeTime').value,
+        exchange_location: document.getElementById('exchangeLocation').value
+    };
+
+    try {
+        const response = await api('/api/admin/settings/event', {
+            method: 'PUT',
+            body: JSON.stringify(settings)
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Event settings saved successfully!');
+        } else {
+            alert(data.message || 'Failed to save settings');
+        }
+    } catch (error) {
+        alert('An error occurred while saving settings');
+    }
+}
+
+// Load editable SMS templates
+async function loadEditableSMSTemplates() {
+    try {
+        const response = await api('/api/admin/settings/sms-templates');
+        const data = await response.json();
+
+        if (!data.success) return;
+
+        const container = document.getElementById('smsTemplateEditor');
+        let html = '<p style="margin-bottom: 1rem; color: rgba(255,255,255,0.7);">Edit your SMS templates below. Available variables: {appUrl}, {recipientName}, {firstName}, {daysRemaining}, {eventTitle}, {eventTime}, {eventLocation}</p>';
+
+        data.templates.forEach(template => {
+            html += `
+                <div style="margin-bottom: 2rem; padding: 1rem; background: rgba(255,255,255,0.1); border-radius: 8px;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: var(--christmas-gold);">${escapeHtml(template.template_name)}</h4>
+                    <p style="margin: 0 0 0.5rem 0; color: rgba(255,255,255,0.7); font-size: 0.9rem;">${escapeHtml(template.description)}</p>
+                    <form onsubmit="saveTemplate(event, ${template.id}); return false;">
+                        <textarea
+                            id="template_${template.id}"
+                            rows="6"
+                            style="width: 100%; padding: 0.75rem; border-radius: 4px; background: rgba(0,0,0,0.3); color: white; border: 1px solid rgba(255,255,255,0.2); font-family: monospace; resize: vertical;"
+                        >${escapeHtml(template.template_body)}</textarea>
+                        <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
+                            <button type="submit" class="btn btn-primary btn-sm">Save Template</button>
+                            <span id="chars_${template.id}" style="color: rgba(255,255,255,0.6); font-size: 0.85rem; align-self: center;"></span>
+                        </div>
+                    </form>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+        // Add character counters
+        data.templates.forEach(template => {
+            const textarea = document.getElementById(`template_${template.id}`);
+            const charCounter = document.getElementById(`chars_${template.id}`);
+
+            function updateCharCount() {
+                const length = textarea.value.length;
+                const segments = Math.ceil(length / 160);
+                const color = length <= 160 ? '#28a745' : '#ffc107';
+                charCounter.innerHTML = `<span style="color: ${color};">${length} chars • ${segments} segment${segments > 1 ? 's' : ''}</span>`;
+            }
+
+            textarea.addEventListener('input', updateCharCount);
+            updateCharCount();
+        });
+    } catch (error) {
+        console.error('Failed to load editable SMS templates:', error);
+    }
+}
+
+// Save SMS template
+async function saveTemplate(e, templateId) {
+    e.preventDefault();
+
+    const templateBody = document.getElementById(`template_${templateId}`).value;
+
+    try {
+        const response = await api(`/api/admin/settings/sms-templates/${templateId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ template_body: templateBody })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Template saved successfully!');
+            await loadSMSTemplates(); // Reload preview
+        } else {
+            alert(data.message || 'Failed to save template');
+        }
+    } catch (error) {
+        alert('An error occurred while saving template');
+    }
+}
 
 // Export functions for onclick handlers
 window.removeParticipant = removeParticipant;
 window.removeExclusion = removeExclusion;
+window.saveTemplate = saveTemplate;
